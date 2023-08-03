@@ -1,9 +1,12 @@
 import { Container } from "../../components/container";
 import './index.scss'
+
+
 export function Home() {
     return (
         <>
         <Container>
+            
             <div className="feed">
                 <section className="postFeed">
                     <img

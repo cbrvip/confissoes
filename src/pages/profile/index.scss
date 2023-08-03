@@ -12,7 +12,7 @@
     h1 {
         font-size: 32px;
         color: #FFF;
-        padding: 15px 0;
+        padding: 0 0;
         font-weight: 300;
     }
 
@@ -28,6 +28,27 @@
             width: 100%;
             height: 100%;
             object-fit: cover; 
+        }
+    }
+
+    p {
+        color: #9a9a9a;
+        padding-bottom: 15px;
+    }
+
+    .buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .btnProfile {
+            color: #FFF;
+            background-color: #9a9a9a;
+            padding: 10px 20px;
+            margin: 2px;
+            border-radius: 5px;
+            font-size: 17px;
         }
     }
 }
