@@ -1,4 +1,3 @@
-import { Navbar } from "../navbar";
 import './index.scss';
 import NavMobile from '../navbar/mobile';
 import logoImg from '../../assets/logo.svg';
