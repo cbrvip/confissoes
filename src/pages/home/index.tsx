@@ -1,5 +1,4 @@
 import { Container } from "../../components/container";
-import { Input } from "../../components/input";
 import './index.scss'
 export function Home() {
     return (

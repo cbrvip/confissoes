@@ -3,7 +3,6 @@ import { Register } from "./pages/register";
 
 import { Layout } from "./components/layout";
 import { Home } from "./pages/home";
-import { Private } from "./routes/Private";
 import { Profile } from "./pages/profile";
 
 
