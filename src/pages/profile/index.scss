@@ -1,0 +1,62 @@
+@import url(../../index.scss);
+
+
+.mainProfile {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    h1 {
+        font-size: 32px;
+        color: #FFF;
+        padding: 15px 0;
+        font-weight: 300;
+    }
+
+    .userPhoto {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: #f0f0f0;
+        margin-top: 35px;
+    
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+    }
+}
+
+.myPosts {
+    width: 100%;
+    height: auto;
+
+    h2 {
+        color: #9a9a9a;
+        font-size: 19px;
+        font-weight: 300;
+        padding: 0 18px;;
+    }
+    
+
+    .posts {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 32% 32% 32%;
+        margin-left: 18px;
+        
+        .recentPost {
+            max-width: 340px;
+            padding: 2px 2px;
+
+            img {
+                width: 330px;
+            }
+        }
+    }
+}
