@@ -9,7 +9,7 @@
     margin-top: 70px;
 
     .postFeed {
-        width: 100%;
+        min-width: 100%;
         height: auto;
         display: flex;
         flex-direction: column;
@@ -17,7 +17,14 @@
 
         .pictureFeed {
             width: 100%;
+            height: 550px;
             border-radius: 5px;
+            overflow: hidden;
+
+            img {
+                width: 100%;
+            }
+
         }
 
         .infoPost {
