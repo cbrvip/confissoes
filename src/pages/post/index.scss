@@ -1,0 +1,49 @@
+.mainPost {
+    width: 100%;
+    padding: 20px;
+
+    .postImg {
+        width: 100%;
+        height: auto;
+        display: flex;
+    
+        .imgPost {
+            width: 100%;
+        }
+    }
+
+    .postDetail {
+        width: 100%;
+
+
+        h1 {
+            color: #FFF;
+        }
+        p {
+            color: #FFF;
+        }
+    }
+
+    .postComments {
+        width: 100%;
+        border-top: 1px solid #111;
+        margin-bottom: 30px;
+
+        .comment {
+            width: 100%;
+
+            p {
+                font-size: 14px;
+                color: #9a9a9a;
+                padding: 10px 0;
+                font-weight: 500;
+                
+                span {
+                    color: #9a9a9a;
+                }
+            }
+        }
+    }
+
+
+}
