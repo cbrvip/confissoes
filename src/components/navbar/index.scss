@@ -18,24 +18,19 @@
                 padding: 10px 0;
                 margin-right: 5px;
                 margin-top: 10px;
+                font-size: 25px;
+                text-decoration: none;
+                font-weight: 300;
+                padding: 15px 15px;
+
+                    span {
+                        margin-right: 12px;
+                        display: inline-block;
+                    }
 
                 &:hover {
                     background-color: #111;
                     transition: 0.4s;
-                }
-
-                a {
-                    font-size: 25px;
-                    text-decoration: none;
-                    font-weight: 300;
-                    padding: 15px 15px;
-
-                    span {
-                        margin-right: 12px;
-   
-                        display: inline-block;
-                    }
-
                 }
             }
         }

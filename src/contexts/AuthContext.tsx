@@ -1,74 +1,82 @@
 import { ReactNode, createContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../services/firebaseConnection';
+import { db, auth } from '../services/firebaseConnection';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 interface AuthProviderProps {
-    children: ReactNode
+  children: ReactNode;
 }
 
 type AuthContextData = {
-    signed: boolean;
-    loadingAuth: boolean;
-    handleInfoUser: ({ name, email, uid}: UserProps) => void;
-    user: UserProps | null;
+  signed: boolean;
+  loadingAuth: boolean;
+  handleInfoUser: ({ name, email, uid, username }: UserProps) => void;
+  user: UserProps | null;
+};
+
+interface UserProps {
+  uid: string;
+  name: string | null;
+  email: string | null;
+  username: string | null;
 }
 
-interface UserProps{
-    uid: string;
-    name: string | null;
-    email: string | null;
-}
+export const AuthContext = createContext({} as AuthContextData);
 
-export const AuthContext = createContext({} as AuthContextData)
+function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<UserProps | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
-function AuthProvider({children}: AuthProviderProps) {
-    
-    const [user, setUser] = useState<UserProps | null>(null);
-    const [loadingAuth, setLoadingAuth] = useState(true);
-    
-    useEffect(() => {
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (userAuth) => {
+      if (userAuth) {
+        const q = query(collection(db, 'users'), where('uid', '==', userAuth.uid));
+        const querySnapshot = await getDocs(q);
 
-        const unsub = onAuthStateChanged(auth, (user) => {
-            if(user) {
-                setUser({
-                    uid: user.uid,
-                    name: user?.displayName,
-                    email: user?.email
-                })
-
-                setLoadingAuth(false);
-            }else {
-                setUser(null);
-                setLoadingAuth(false);
-            }
-        })
-
-        return () => {
-            unsub();
+        if (!querySnapshot.empty) {
+          const userData = querySnapshot.docs[0].data();
+          setUser({
+            uid: userAuth.uid,
+            name: userData.name,
+            email: userAuth.email,
+            username: userData.username,
+          });
+        } else {
+          // Handle the case when user data is not found in Firestore
         }
-        
-    }, [])
+      } else {
+        setUser(null);
+      }
 
-    function handleInfoUser({ name, email, uid }: UserProps) {
-        setUser({
-            name,
-            email,
-            uid
-        })
-    }
+      setLoadingAuth(false);
+    });
 
-    return (
-        <AuthContext.Provider
-        value={{
-            signed: !!user,
-            loadingAuth,
-            handleInfoUser,
-            user
-        }}
-        >
-            {children}
-        </AuthContext.Provider>
-    )
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  function handleInfoUser({ name, email, uid, username }: UserProps) {
+    setUser({
+      name,
+      email,
+      uid,
+      username,
+    });
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        signed: !!user,
+        loadingAuth,
+        handleInfoUser,
+        user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export default AuthProvider;

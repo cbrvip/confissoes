@@ -4,11 +4,17 @@ import { FaHouseChimney, FaUser, FaPhotoFilm, FaUserPlus, FaCircleLeft } from 'r
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { signOut } from "firebase/auth";
+import { auth } from "../../services/firebaseConnection";
 
 
 export function Navbar() {
+    
+    const { user, signed, loadingAuth } = useContext(AuthContext);
 
-    const { signed, loadingAuth } = useContext(AuthContext);
+    async function handleLogout() {
+        await signOut(auth);
+    }
 
     return (
         <>
@@ -20,28 +26,28 @@ export function Navbar() {
                 <ul>
                     <li><a href="/"><span><FaHouseChimney size={24} /></span> Página Inicial</a></li>
                     {!loadingAuth && signed && (
-                    <Link to={"/profile"}>
-                        <li><a><span><FaUser size={24} /></span> Meu Perfil</a></li>
+                    <Link to={`/profile/${user?.uid}`}>
+                        <li><span><FaUser size={24} /></span> Meu Perfil</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (
                     <Link to={"/profile/post"}>
-                        <li><a><span><FaPhotoFilm size={24} /></span> Novo Post</a></li>
+                        <li><span><FaPhotoFilm size={24} /></span> Novo Post</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (
-                    <Link to={"/"}>
-                        <li><a><span><FaCircleLeft size={24} /></span> Logout</a></li>
+                    <Link to={"/"} onClick={handleLogout}>
+                        <li><span><FaCircleLeft size={24} /></span> Logout</li>
                     </Link>
                     )}
                     {!loadingAuth && !signed && (
                         <Link to={"/login"}>
-                            <li><a><span><FaUser size={24} /></span> Login</a></li>
+                            <li><span><FaUser size={24} /></span> Login</li>
                         </Link>
                     )}
                     {!loadingAuth && !signed && (
                         <Link to={"/register"}>
-                            <li><a><span><FaUserPlus size={24} /></span> Cadastrar-se</a></li>
+                            <li><span><FaUserPlus size={24} /></span> Cadastrar-se</li>
                         </Link>
                     )}
                     

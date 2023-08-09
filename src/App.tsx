@@ -1,12 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Register } from "./pages/register";
-
 import { Layout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Profile } from "./pages/profile";
 import { Login } from "./pages/login";
 import { Private } from "./routes/Private";
 import { Post } from "./pages/profile/post";
+import { PostDetail } from "./pages/post";
+import { Dashboard } from "./admin/pages/dashboard";
+import { LoginAdmin } from "./admin/pages/login";
+import { PostsAdmin } from "./admin/pages/posts";
 
 const router = createBrowserRouter([
     {
@@ -17,12 +20,16 @@ const router = createBrowserRouter([
             element: <Home />
         },
         {
-            path: "/profile",
+            path: "/profile/:uid",
             element: <Profile />
         },
         {
             path: "/profile/post",
             element: <Private><Post /></Private>
+        },
+        {
+            path: "/post/:id",
+            element: <PostDetail />
         }
         ]
     },
@@ -34,6 +41,19 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />
     },
+    {
+        path: "/admin",
+        element: <Dashboard />
+    },
+    {
+        path: "/admin/login",
+        element: <LoginAdmin />
+    },
+    {
+        path: "/admin/posts",
+        element: <PostsAdmin />
+    }
+    
     
 ])
 
