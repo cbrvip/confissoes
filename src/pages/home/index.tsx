@@ -15,20 +15,12 @@ import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
-interface PostProps {
-  id: string;
-  title: string;
-  description: string;
-  uid: string;
-  images: PostImageProps[];
-  comments: CommentProps[];
-}
-
-interface CommentProps {
-  id: string;
-  text: string;
-  userId: string;
-  createdAt: Date;
+interface PostProps{
+    id: string;
+    title: string;
+    description: string;
+    uid: string;
+    images: PostImageProps[];
 }
 
 interface PostImageProps{
