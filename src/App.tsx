@@ -7,6 +7,9 @@ import { Login } from "./pages/login";
 import { Private } from "./routes/Private";
 import { Post } from "./pages/profile/post";
 import { PostDetail } from "./pages/post";
+import { Dashboard } from "./admin/pages/dashboard";
+import { LoginAdmin } from "./admin/pages/login";
+import { PostsAdmin } from "./admin/pages/posts";
 
 const router = createBrowserRouter([
     {
@@ -38,6 +41,19 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />
     },
+    {
+        path: "/admin",
+        element: <Dashboard />
+    },
+    {
+        path: "/admin/login",
+        element: <LoginAdmin />
+    },
+    {
+        path: "/admin/posts",
+        element: <PostsAdmin />
+    }
+    
     
 ])
 
