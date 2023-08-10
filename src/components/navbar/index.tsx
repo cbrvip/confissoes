@@ -9,8 +9,12 @@ import { auth } from "../../services/firebaseConnection";
 
 
 export function Navbar() {
+    
+    const { user, signed, loadingAuth } = useContext(AuthContext);
 
-    const { signed, user, loadingAuth } = useContext(AuthContext);
+    async function handleLogout() {
+        await signOut(auth);
+    }
 
     return (
         <>
@@ -22,8 +26,8 @@ export function Navbar() {
                 <ul>
                     <li><a href="/"><span><FaHouseChimney size={24} /></span> Página Inicial</a></li>
                     {!loadingAuth && signed && (
-                    <Link to={"/profile"}>
-                        <li><a><span><FaUser size={24} /></span> Meu Perfil</a></li>
+                    <Link to={`/profile/${user?.uid}`}>
+                        <li><span><FaUser size={24} /></span> Meu Perfil</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (
@@ -32,8 +36,8 @@ export function Navbar() {
                     </Link>
                     )}
                     {!loadingAuth && signed && (
-                    <Link to={"/"}>
-                        <li><a><span><FaCircleLeft size={24} /></span> Logout</a></li>
+                    <Link to={"/"} onClick={handleLogout}>
+                        <li><span><FaCircleLeft size={24} /></span> Logout</li>
                     </Link>
                     )}
                     {!loadingAuth && !signed && (

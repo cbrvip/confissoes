@@ -15,12 +15,20 @@ import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
-interface PostProps{
-    id: string;
-    title: string;
-    description: string;
-    uid: string;
-    images: PostImageProps[];
+interface PostProps {
+  id: string;
+  title: string;
+  description: string;
+  uid: string;
+  images: PostImageProps[];
+  comments: CommentProps[];
+}
+
+interface CommentProps {
+  id: string;
+  text: string;
+  userId: string;
+  createdAt: Date;
 }
 
 interface PostImageProps{
@@ -35,7 +43,7 @@ export function Home() {
     const [posts, setPosts] = useState<PostProps[]>([]);
     const [loadImages, setLoadImages] = useState<string[]>([]);
     const [input, setInput] = useState("");
-    const { signed, user } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
       loadPostsAndComments();
@@ -103,8 +111,13 @@ export function Home() {
     }
 
     function handleAddComment(postId: string) {
+
+      if (!user || !user.uid) {
+        return;
+      }
+
       if (input.trim() === "") return;
-    
+      
       const userId = user.uid;
     
       addComment(postId, userId, input);
@@ -116,8 +129,6 @@ export function Home() {
     function handleImageLoad(id: string) {
         setLoadImages((prevImageLoaded) => [...prevImageLoaded, id])
     }
-
-    
 
     return (
         <>
