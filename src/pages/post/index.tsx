@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Container } from "../../components/container"
-import { FaWhatsapp } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getDoc, doc } from "firebase/firestore";

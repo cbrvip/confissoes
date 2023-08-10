@@ -42,7 +42,7 @@ export function Login() {
         navigate(`/profile/${user.uid}`, { replace: true });
       })
       .catch(err => {
-        toast.error("Erro ao fazer o login");
+        toast.error("Erro ao fazer o login", err);
       });
   }
 
