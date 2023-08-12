@@ -1,0 +1,16 @@
+.navAdm {
+    width: 100%;
+    background-color: antiquewhite;
+    border-radius: 10px;
+    margin-top: 50px;
+
+    ul {
+        display: flex;
+        flex-direction: row;
+
+        li {
+            font-size: 19px;
+            padding: 15px;
+        }
+    }
+}

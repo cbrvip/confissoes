@@ -1,0 +1,47 @@
+.listComments {
+    width: 100%;
+    color: #FFF;
+
+    .infoPost {
+        color: #FFF;
+
+        h1 {
+            font-size: 22px;
+            margin-top: 30px;
+            background-color: #222;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        p {
+            font-size: 17px;
+            padding: 10px;
+        }
+
+        .comments {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #111;
+            padding: 30px 0;
+
+            h2 {
+                padding: 0 10px;
+                margin-bottom: -10px;
+                margin-top: -20px;
+            }
+            h3 {
+                padding: 0 10px;
+                margin-bottom: -15px;
+            }
+             
+        }
+    }
+
+    .btnDelete {
+        background-color: #FFF;
+        color: #000;
+        padding: 10px;
+        border-radius: 8px;
+        margin: 10px;
+        justify-content: end;
+    }
+}

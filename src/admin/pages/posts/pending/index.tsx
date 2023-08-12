@@ -1,20 +1,24 @@
-import { Container } from "../../components/container";
-import './index.scss'
+import { Container } from "../../../components/container";
 import { useState, useEffect } from "react";
 import {
     collection,
     query,
     getDocs,
-    orderBy
+    orderBy,
+    updateDoc,
+    doc
 } from "firebase/firestore";
-import { db } from "../../services/firebaseConnection";
+import { db } from "../../../../services/firebaseConnection";
 import { Link } from "react-router-dom";
+import './index.scss';
+import { Navbar } from "../../../components/navbar";
 
 interface PostProps {
   id: string;
   title: string;
   description: string;
   uid: string;
+  approved: number;
   images: PostImageProps[];
   comments: CommentProps[];
 }
@@ -33,7 +37,7 @@ interface PostImageProps{
 }
 
 
-export function Home() {
+export function PostsAdminPending() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
 
@@ -50,12 +54,13 @@ export function Home() {
 
       for (const doc of querySnapshot.docs) {
           const postData = doc.data();
-          if (postData.approved === 1) {
+          if (postData.approved === 0) {
             postsData.push({
                 id: doc.id,
                 title: postData.title,
                 description: postData.description,
                 images: postData.images,
+                approved: postData.approved,
                 uid: postData.uid,
                 comments: [],
             });
@@ -69,10 +74,32 @@ export function Home() {
       setLoadImages((prevImageLoaded) => [...prevImageLoaded, id])
   }
 
+  async function approvePost(postId: string) {
+    const postRef = doc(db, "posts", postId);
+
+    try {
+        await updateDoc(postRef, {
+            approved: 1,
+        });
+
+        setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+                post.id === postId ? { ...post, approved: 1 } : post
+            )
+        );
+
+        console.log("Post approved successfully!");
+        window.location.reload();
+    } catch (error) {
+        console.error("Error approving post:", error);
+    }
+}
+
   return (
       <>
       <Container>
-          
+        <main>
+          <Navbar />
           <div className="feed">
               {posts.map( post => (
               <section className="postFeed" key={post.id}>
@@ -90,15 +117,24 @@ export function Home() {
                       />
                   </Link>
                   </div>
-                  <div className="infoPost">
-                      <h1>{post.title}</h1>
-                      <h2>{post.description}</h2>
-                  </div>
+                  <div className="adminControls">
+                                {post.approved === 0 && (
+                                    <button
+                                        onClick={() => approvePost(post.id)}
+                                        className="approveButton"
+                                    >
+                                        Aprovar para o Feed
+                                    </button>
+                                )}
+                            </div>
               </section>
+
+              
               
               ))}
               
           </div>
+          </main>
       </Container>
       </>
   )

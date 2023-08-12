@@ -1,14 +1,14 @@
 import { Container } from "../../../components/container";
 import { FiUpload, FiTrash } from "react-icons/fi";
 import { useForm } from "react-hook-form";
-import { Input } from "../../../components/input";
+import { Input } from "../../../../components/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChangeEvent, useState, useContext } from "react";
-import { AuthContext } from "../../../contexts/AuthContext";
+import { AuthContext } from "../../../../contexts/AuthContext";
 import { v4 as uuidV4 } from "uuid";
 import toast from "react-hot-toast";
-import { storage, db } from "../../../services/firebaseConnection";
+import { storage, db } from "../../../../services/firebaseConnection";
 import {
     ref,
     uploadBytes,
@@ -17,6 +17,7 @@ import {
 } from "firebase/storage";
 import { addDoc, collection} from "firebase/firestore";
 import './index.scss';
+import { Navbar } from "../../../components/navbar";
 
 const schema = z.object({
     title: z.string().nonempty("O campo titúlo é obrigatório"),
@@ -33,7 +34,7 @@ interface ImageItemProps{
     url: string;
 }
 
-export function Post() {
+export function NewPostAdm() {
 
     const { user } = useContext(AuthContext);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
@@ -105,7 +106,7 @@ export function Post() {
             created: new Date(),
             owner: user?.name,
             uid: user?.uid,
-            approved: 0,
+            approved: 1,
             images: postListImages,
         })
         .then(() => {
@@ -136,8 +137,10 @@ export function Post() {
 
     return (
         <Container>
+            <main>
+            <Navbar />
             <div className="newPost">
-                <h1>Novo Post</h1>
+                <h1>Adicionar Publicação</h1>
 
                 <div className="formPost">
                 <div className="w-full p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2">
@@ -193,6 +196,7 @@ export function Post() {
 
                 </div>
             </div>
+            </main>
         </Container>
     )
 }

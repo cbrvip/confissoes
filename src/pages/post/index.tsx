@@ -1,13 +1,29 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { Container } from "../../components/container"
 import { useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, getDocs, collection, query, where, addDoc, orderBy, serverTimestamp } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
+import { AuthContext } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 import './index.scss';
 
 
-interface PostProps{
+interface CommentProps {
+    id: string;
+    text: string;
+    userId: string;
+    username: string;
+    createdAt: Date;
+}
+
+interface ImagePostProps {
+    uid: string;
+    name: string;
+    url: string;
+}
+
+interface PostProps {
     id: string;
     title: string;
     description: string;
@@ -16,12 +32,7 @@ interface PostProps{
     owner: string;
     created: string;
     images: ImagePostProps[];
-}
-
-interface ImagePostProps{
-    uid: string;
-    name: string;
-    url: string;
+    comments: CommentProps[];
 }
 
 export function PostDetail() {
@@ -30,36 +41,100 @@ export function PostDetail() {
     const [post, setPost] = useState<PostProps>();
     const [sliderPerView, setSliderPerView] = useState<number>(2);
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    const [input, setInput] = useState("");
 
     useEffect(() => {
-
         async function loadPost() {
-            if(!id) { return }
+            if (!id) {
+                return;
+            }
 
-            const docRef = doc(db, "posts", id)
-            getDoc(docRef)
-            .then((snapshot) => {
+            const postRef = doc(db, "posts", id);
+            const postSnapshot = await getDoc(postRef);
 
-                if(!snapshot.data()){
-                    navigate("/")
-                }
+            if (!postSnapshot.exists()) {
+                navigate("/");
+                return;
+            }
 
-                setPost({
-                    id: snapshot.id,
-                    title: snapshot.data()?.title,
-                    description: snapshot.data()?.description,
-                    name: snapshot.data()?.name,
-                    uid: snapshot.data()?.uid,
-                    owner: snapshot.data()?.owner,
-                    created: snapshot.data()?.created,
-                    images: snapshot.data()?.images,
-                })
-            })
+            const postData = postSnapshot.data();
+
+            const comments = await getCommentsForPost(id);
+
+            setPost({
+                id: postSnapshot.id,
+                title: postData.title,
+                description: postData.description,
+                name: postData.name,
+                uid: postData.uid,
+                owner: postData.owner,
+                created: postData.created,
+                images: postData.images,
+                comments: comments,
+            });
         }
 
         loadPost();
+    }, [id]);
+
+    async function getCommentsForPost(postId: string) {
+        const commentsRef = collection(db, "comments");
+        const queryRef = query(
+            commentsRef,
+            where("postId", "==", postId),
+            orderBy("createdAt", "desc")
+        );
+
+        const querySnapshot = await getDocs(queryRef);
+        const comments: CommentProps[] = [];
+
+        querySnapshot.forEach((doc) => {
+            comments.push({
+                id: doc.id,
+                text: doc.data().text,
+                userId: doc.data().userId,
+                username: doc.data().username,
+                createdAt: doc.data().createdAt.toDate(),
+            });
+        });
+
+        return comments;
+    }
+
+    async function addComment(postId: string, userId: string, username: string, text: string) {
+        try {
+          const newComment = {
+            postId,
+            userId,
+            username,
+            text,
+            createdAt: serverTimestamp(),
+          };
+      
+          await addDoc(collection(db, "comments"), newComment);
+        } catch (error) {
+          console.error("Erro ao adicionar o comentário:", error);
+        }
+      }
+  
+      function handleAddComment() {
+        if (!user || !user.uid || !user.username || !post) {
+            return;
+        }
+    
+        if (input.trim() === "") return;
+    
+        const userId = user.uid;
+        const username = user.username;
+        const postId = post.id;
+    
         
-    }, [id])
+        addComment(postId, userId, username, input);
+    
+        setInput("");
+    }
+    
 
     useEffect(() => {
         function handleResize() {
@@ -103,10 +178,20 @@ export function PostDetail() {
                     </div>
                     <article className="postComments">
                         <div className="comment">
-                            <p>Fulano de tal: <span>Eu nao acredito que to vendo isso kkk</span></p>
-                            <p><span>Ver todos os comentários...</span></p>
+                                {post.comments.map(comment => (
+                                <p key={comment.id}>
+                                    <Link to="">{comment.username} </Link>: <span>{comment.text}</span>
+                                </p>
+                            ))}
                         </div>
-                        <input className="inputComment" type="text" placeholder="Adicione um comentário..." />
+                        <input
+                            className="inputComment"
+                            type="text"
+                            placeholder="Adicione um comentário..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                        />
+                        <button onClick={handleAddComment}>Enviar Comentário</button>
                     </article>
                 </main>
             ) }

@@ -10,6 +10,10 @@ import { PostDetail } from "./pages/post";
 import { Dashboard } from "./admin/pages/dashboard";
 import { LoginAdmin } from "./admin/pages/login";
 import { PostsAdmin } from "./admin/pages/posts";
+import { PostsAdminPending } from "./admin/pages/posts/pending";
+import { PostsAdminApproved } from "./admin/pages/posts/approved";
+import { NewPostAdm } from "./admin/pages/posts/new";
+import { CommentAdm } from "./admin/pages/comments";
 
 const router = createBrowserRouter([
     {
@@ -43,7 +47,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin",
-        element: <Dashboard />
+        element: <Private><Dashboard /></Private>
     },
     {
         path: "/admin/login",
@@ -51,7 +55,23 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin/posts",
-        element: <PostsAdmin />
+        element: <Private><PostsAdmin /></Private>
+    },
+    {
+        path: "/admin/posts/approved",
+        element: <Private><PostsAdminApproved /></Private>
+    },
+    {
+        path: "/admin/posts/pending",
+        element: <Private><PostsAdminPending /></Private>
+    },
+    {
+        path: "/admin/posts/new",
+        element: <Private><NewPostAdm /></Private>
+    },
+    {
+        path: "/admin/comments",
+        element: <Private><CommentAdm /></Private>
     }
     
     
