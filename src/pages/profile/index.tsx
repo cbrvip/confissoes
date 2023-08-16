@@ -1,13 +1,13 @@
 import { Container } from "../../components/container";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, ChangeEvent } from "react";
 import { FiTrash2 } from "react-icons/fi";
-
-import { collection, getDocs, where, query, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../services/firebaseConnection";
-import { ref, deleteObject } from "firebase/storage";
 import { AuthContext } from "../../contexts/AuthContext";
 import './index.scss';
 import { Link } from "react-router-dom";
+import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
+import toast from "react-hot-toast";
 
 interface PostProps{
     id: string;
@@ -24,9 +24,57 @@ interface ImagePostProps{
     url: string;
 }
 
+interface PhotoProfile {
+    name: string;
+    uid: string;
+    url: string;
+}
+
+
 export function Profile() {
-    const [posts, setPosts] = useState<PostProps[]>([]);
     const { signed, user } = useContext(AuthContext);
+    const [posts, setPosts] = useState<PostProps[]>([]);
+    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+    const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
+
+    async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
+        if (e.target.files && e.target.files[0]) {
+            const image = e.target.files[0];
+
+            if (image.type === 'image/jpeg' || image.type === 'image/png') {
+                try {
+                    const uploadRef = ref(storage, `profileImages/${user?.uid}/${image.name}`);
+                    await uploadBytes(uploadRef, image);
+
+                    const downloadURL = await getDownloadURL(uploadRef);
+
+                    const userDocRef = doc(db, "users", user?.uid);
+                    await updateDoc(userDocRef, {
+                        photo: downloadURL
+                    });
+
+                    setProfileImageUrl(downloadURL);
+
+                    setPhotoProfile([
+                        ...photoProfile,
+                        {
+                            uid: user?.uid || "",
+                            name: image.name,
+                            url: downloadURL
+                        }
+                    ]);
+
+                    toast.success("Imagem do perfil carregada com sucesso!");
+                } catch (error) {
+                    console.error("Erro ao fazer o upload da imagem do perfil:", error);
+                    toast.error("Erro ao carregar a imagem do perfil. Por favor, tente novamente.");
+                }
+            } else {
+                toast.error('A imagem deve ser JPEG ou PNG!');
+            }
+        }
+    }
+
 
     useEffect(() => {
         function loadPosts() {
@@ -71,7 +119,7 @@ export function Profile() {
         await deleteDoc(docRef);
 
         itemPost.images.map( async (image) => {
-            const imagePath = `images/${image.uid}/${image.name}`
+            const imagePath = `images/<span class="math-inline">\{image\.uid\}/</span>{image.name}`
             const imageRef = ref(storage, imagePath)
 
             try {
@@ -82,24 +130,24 @@ export function Profile() {
             }
             
         })
-
-        
     }
+
 
     return (
         <Container>
             
             <div className="mainProfile">
-            <div className="userPhoto">
-                    <img src="https://img.freepik.com/fotos-gratis/retrato-de-homem-feliz-e-sorridente_23-2149022620.jpg" alt="" />
+                <div className="userPhoto">
+                    <img
+                        src={user?.photo || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                        className="photoPerfil"
+                    />
                 </div>
+                
                 <h1>{user?.name || "Nome do Usuário"}</h1>
-                <p><a href={`/${user?.username}`}>{user?.username || "Username"}</a></p>
+                <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
 
                 <div className="buttons">
-                    <Link to={`/profile/edit`}>
-                    <button className="btnProfile">Editar Perfil</button>
-                    </Link>
                     <Link to={`/profile/post`}>
                     <button className="btnProfile">Novo Post</button>
                     </Link>
@@ -111,18 +159,20 @@ export function Profile() {
                     <div className="posts">
                     {posts.map( post => (
                         <section key={post.id} className="recentPost">
-                            <button
-                            className="absolute bg-white w-14 h-14 rounded-full flex items-center justify-center right-2 top-2 drop-shadow"
-                            onClick={ () =>  handleDeletePost(post) }
-                            >
-                                <FiTrash2 size={26} color="#000" />
-                            </button>
+                            
                             <Link key={post.id} to={`/post/${post.id}`}>
                                 <img
                                 src={post.images[0]?.url}
                                 alt=""
+                                className="imgProfile"
                                 />
                             </Link>
+                            <button
+                            className="btn-delete"
+                            onClick={ () =>  handleDeletePost(post) }
+                            >
+                                <FiTrash2 size={26} color="#fff" />
+                            </button>
                         </section>
                         ))}
                     </div>

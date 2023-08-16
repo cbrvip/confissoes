@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/input';
 import logoImg from '../../assets/logo.svg';
@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { auth } from '../../services/firebaseConnection';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConnection';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -40,12 +40,14 @@ export function Register() {
         displayName: data.name,
       });
 
-      // Armazene as informações adicionais do usuário no Firestore
-      await addDoc(collection(db, 'users'), {
+      const userDocRef = doc(db, 'users', user.uid);
+      
+      await setDoc(userDocRef, {
         uid: user.uid,
         name: data.name,
         email: data.email,
-        username: data.username,
+        username: data.username, // Set the username to the user's UID
+        photo: "",
       });
 
       handleInfoUser({
@@ -53,6 +55,7 @@ export function Register() {
         name: data.name,
         email: data.email,
         username: data.username,
+        photo: "",
       });
 
       toast.success('Usuário cadastrado com sucesso!');

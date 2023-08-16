@@ -10,7 +10,7 @@ interface AuthProviderProps {
 type AuthContextData = {
   signed: boolean;
   loadingAuth: boolean;
-  handleInfoUser: ({ name, email, uid, username }: UserProps) => void;
+  handleInfoUser: ({ name, email, uid, username, photo }: UserProps) => void;
   user: UserProps | null;
 };
 
@@ -19,6 +19,7 @@ interface UserProps {
   name: string | null;
   email: string | null;
   username: string | null;
+  photo: string | null;
 }
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -40,6 +41,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             name: userData.name,
             email: userAuth.email,
             username: userData.username,
+            photo: userData.photo
           });
         } else {
           // Handle the case when user data is not found in Firestore
@@ -56,12 +58,13 @@ function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  function handleInfoUser({ name, email, uid, username }: UserProps) {
+  function handleInfoUser({ name, email, uid, username, photo }: UserProps) {
     setUser({
       name,
       email,
       uid,
       username,
+      photo
     });
   }
 

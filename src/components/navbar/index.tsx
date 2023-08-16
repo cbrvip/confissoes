@@ -21,7 +21,9 @@ export function Navbar() {
         <div className="navbar">
             <nav>
                 <div className="logo">
-                    <img src={logoImg} alt="" />
+                    <Link to={`/`}>
+                        <img src={logoImg} alt="" />
+                    </Link>
                 </div>
                 <ul>
                     <li><a href="/"><span><FaHouseChimney size={24} /></span> Página Inicial</a></li>

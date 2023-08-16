@@ -39,7 +39,7 @@ export function PostDetail() {
 
     const { id } = useParams();
     const [post, setPost] = useState<PostProps>();
-    const [sliderPerView, setSliderPerView] = useState<number>(2);
+    const [sliderPerView, setSliderPerView] = useState<number>(1);
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [input, setInput] = useState("");
@@ -136,41 +136,26 @@ export function PostDetail() {
     }
     
 
-    useEffect(() => {
-        function handleResize() {
-            if(window.innerWidth < 720) {
-                setSliderPerView(1);
-            } else {
-                setSliderPerView(2);
-            }
-        }
-
-        handleResize();
-
-        window.addEventListener("resize", handleResize)
-
-        return() => {
-            window.removeEventListener("resize", handleResize)
-        }
-    }, [])
+    
     
     return (
         <Container>
             { post && (
                 <main className="mainPost">
                     <div className="postImg">
-                        <Swiper
+                    <Swiper
                         slidesPerView={sliderPerView}
                         pagination={{ clickable: true }}
                         navigation
-                        >
-                        {post?.images.map ( image => (
-                            <SwiperSlide key={image.name}>
-                                <img src={image.url} className="imgPost" />
-                            </SwiperSlide>
-                        ))}
-        
-                        </Swiper>
+                        className="w-full"
+                    >
+                    {post?.images.map ( image => (
+                        <SwiperSlide key={image.name}>
+                            <img src={image.url} className="imgPost" />
+                        </SwiperSlide>
+                    ))}
+    
+                    </Swiper>
                     </div>
                     <div className="postDetail">
                         <h1>{post.title}</h1>
@@ -191,7 +176,7 @@ export function PostDetail() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                         />
-                        <button onClick={handleAddComment}>Enviar Comentário</button>
+                        <button className="btn-comment" onClick={handleAddComment}>Enviar Comentário</button>
                     </article>
                 </main>
             ) }

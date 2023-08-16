@@ -4,8 +4,15 @@
 }
 
 .container {
-    width: 40%;
+    max-width: 40%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media (max-width: 924px) {
+    .container {
+        max-width: 100%;
+    }
+    
 }
