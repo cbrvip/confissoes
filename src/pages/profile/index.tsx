@@ -48,6 +48,8 @@ export function Profile() {
 
                     const downloadURL = await getDownloadURL(uploadRef);
 
+                    if(!user) return;
+
                     const userDocRef = doc(db, "users", user?.uid);
                     await updateDoc(userDocRef, {
                         photo: downloadURL
