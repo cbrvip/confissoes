@@ -1,6 +1,6 @@
 import { Container } from "../../components/container";
 import './index.scss'
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     collection,
     query,

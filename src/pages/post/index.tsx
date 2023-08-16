@@ -39,7 +39,7 @@ export function PostDetail() {
 
     const { id } = useParams();
     const [post, setPost] = useState<PostProps>();
-    const [sliderPerView, setSliderPerView] = useState<number>(1);
+    const [sliderPerView] = useState<number>(1);
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
     const [input, setInput] = useState("");

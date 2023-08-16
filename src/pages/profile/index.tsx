@@ -34,7 +34,7 @@ interface PhotoProfile {
 export function Profile() {
     const { signed, user } = useContext(AuthContext);
     const [posts, setPosts] = useState<PostProps[]>([]);
-    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+    const [setProfileImageUrl] = useState<string | null>(null);
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
 
     async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
