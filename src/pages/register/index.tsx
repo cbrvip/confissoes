@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/input';
 import logoImg from '../../assets/logo.svg';
@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { auth } from '../../services/firebaseConnection';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConnection';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';

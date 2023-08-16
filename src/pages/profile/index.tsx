@@ -143,6 +143,8 @@ export function Profile() {
                         className="photoPerfil"
                     />
                 </div>
+
+                <input type="file" onSubmit={handleProfileImageUpload} />
                 
                 <h1>{user?.name || "Nome do Usuário"}</h1>
                 <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
