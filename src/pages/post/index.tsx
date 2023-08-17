@@ -147,7 +147,6 @@ export function PostDetail() {
                         slidesPerView={sliderPerView}
                         pagination={{ clickable: true }}
                         navigation
-                        className="w-full"
                     >
                     {post?.images.map ( image => (
                         <SwiperSlide key={image.name}>

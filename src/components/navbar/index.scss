@@ -72,8 +72,7 @@
     text-decoration: none;
     color: #333;
   }
-  
-  /* Estilos para dispositivos móveis */
+
   @media screen and (max-width: 768px) {
     .navbar {
         display: none;
@@ -83,10 +82,24 @@
       position: absolute;
       top: 50px;
       left: 0;
+      width: 100%;
       background-color: #fff;
-      padding: 20px;
+
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       border-radius: 5px;
+
+      li {
+        padding: 10px 10px;
+        margin-right: 5px;
+        margin-top: 10px;
+        font-weight: 400;
+        font-size: 21px;
+        color: #111;
+      }
+
+      span {
+        display: inline-block;
+      }
     }
   
     .menu-icon {
@@ -99,7 +112,6 @@
   }
 
 @media (min-width: 768px) {
-    
     .menu-icon {
         display: none;
     }

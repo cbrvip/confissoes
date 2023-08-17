@@ -65,3 +65,12 @@
     margin-top: 10px;
     border: 2px solid #111;
 }
+
+@media (max-width: 924px) {
+    .mainPost {
+        margin-top: 40px;
+    }
+    .imgPost {
+        z-index: -999;
+    }
+}

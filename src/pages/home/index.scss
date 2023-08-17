@@ -91,3 +91,13 @@
     background-color: rgb(8, 8, 8);
     color: #FFF;
 }
+
+@media (max-width: 924px) {
+    .feed {
+
+        .postFeed {
+            padding: 0 20px;
+        }
+    }
+    
+}
