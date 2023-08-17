@@ -34,7 +34,7 @@ interface PhotoProfile {
 export function Profile() {
     const { signed, user } = useContext(AuthContext);
     const [posts, setPosts] = useState<PostProps[]>([]);
-    const [setProfileImageUrl] = useState<string | null>(null);
+    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
 
     async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -121,7 +121,7 @@ export function Profile() {
         await deleteDoc(docRef);
 
         itemPost.images.map( async (image) => {
-            const imagePath = `images/<span class="math-inline">\{image\.uid\}/</span>{image.name}`
+            const imagePath = `images/${image.uid}/${image.name}`;
             const imageRef = ref(storage, imagePath)
 
             try {
@@ -140,13 +140,10 @@ export function Profile() {
             
             <div className="mainProfile">
                 <div className="userPhoto">
-                    <img
-                        src={user?.photo || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
-                        className="photoPerfil"
-                    />
+                <img src={user?.photo || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"} className="photoPerfil" />
                 </div>
 
-                <input type="file" onSubmit={handleProfileImageUpload} />
+                <input type="file" onChange={handleProfileImageUpload} />
                 
                 <h1>{user?.name || "Nome do Usuário"}</h1>
                 <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
