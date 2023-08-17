@@ -34,29 +34,29 @@ interface PhotoProfile {
 export function Profile() {
     const { signed, user } = useContext(AuthContext);
     const [posts, setPosts] = useState<PostProps[]>([]);
-    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
+    const [profileImageUrl, setProfileImageUrl] = useState<string | null>("");
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
 
     async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
             const image = e.target.files[0];
-
+    
             if (image.type === 'image/jpeg' || image.type === 'image/png') {
                 try {
                     const uploadRef = ref(storage, `profileImages/${user?.uid}/${image.name}`);
                     await uploadBytes(uploadRef, image);
-
+    
                     const downloadURL = await getDownloadURL(uploadRef);
-
-                    if(!user) return;
-
+    
+                    if (!user) return;
+    
                     const userDocRef = doc(db, "users", user?.uid);
                     await updateDoc(userDocRef, {
                         photo: downloadURL
                     });
 
                     setProfileImageUrl(downloadURL);
-
+    
                     setPhotoProfile([
                         ...photoProfile,
                         {
@@ -66,6 +66,8 @@ export function Profile() {
                         }
                     ]);
 
+                    
+    
                     toast.success("Imagem do perfil carregada com sucesso!");
                 } catch (error) {
                     console.error("Erro ao fazer o upload da imagem do perfil:", error);
@@ -140,7 +142,10 @@ export function Profile() {
             
             <div className="mainProfile">
                 <div className="userPhoto">
-                <img src={user?.photo || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"} className="photoPerfil" />
+                <img
+                    src={user?.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                    className="photoPerfil"
+                />
                 </div>
 
                 <input type="file" onChange={handleProfileImageUpload} />
