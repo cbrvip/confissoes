@@ -142,13 +142,21 @@ export function Profile() {
             
             <div className="mainProfile">
                 <div className="userPhoto">
-                <img
-                    src={user?.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
-                    className="photoPerfil"
+                <input
+                    type="file"
+                    id="profileImageInput"
+                    onChange={handleProfileImageUpload}
+                    style={{ display: 'none' }}
+                    accept="image/jpeg, image/png"
                 />
+                <label htmlFor="profileImageInput">
+                    <img
+                        src={user?.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                        className="photoPerfil"
+                        style={{ cursor: 'pointer' }}
+                    />
+                </label>
                 </div>
-
-                <input type="file" onChange={handleProfileImageUpload} />
                 
                 <h1>{user?.name || "Nome do Usuário"}</h1>
                 <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
