@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Container } from "../../components/container";
 import { useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,14 +10,12 @@ import {
   query,
   where,
   addDoc,
-  orderBy,
-  serverTimestamp,
+  orderBy
 } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import "./index.scss";
-import { v4 as uuidv4 } from "uuid";
 
 interface CommentProps {
   id: string;
