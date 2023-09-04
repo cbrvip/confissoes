@@ -182,7 +182,7 @@ export function PostDetail() {
             <div className="comment">
               {commentList.map((comment) => (
                 <p key={comment.id}>
-                  <Link to="">{comment.username} </Link>:{" "}
+                  <Link to={`/profile/${comment.userId}`}>{comment.username} </Link>:{" "}
                   <span>{comment.text}</span>
                 </p>
               ))}

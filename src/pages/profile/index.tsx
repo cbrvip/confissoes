@@ -1,11 +1,11 @@
 import { Container } from "../../components/container";
 import { useEffect, useState, useContext, ChangeEvent } from "react";
 import { FiTrash2 } from "react-icons/fi";
-import { collection, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, getDoc, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../services/firebaseConnection";
 import { AuthContext } from "../../contexts/AuthContext";
 import './index.scss';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast from "react-hot-toast";
 
@@ -29,6 +29,12 @@ interface PhotoProfile {
     uid: string;
     url: string;
 }
+interface UserInfo {
+    // Defina a estrutura dos dados do usuário aqui
+    name: string;
+    email: string;
+    // Outros campos, se houver
+  }
 
 
 export function Profile() {
@@ -36,7 +42,30 @@ export function Profile() {
     const [posts, setPosts] = useState<PostProps[]>([]);
     const [profileImageUrl, setProfileImageUrl] = useState<string | null>("");
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
+    const { uid } = useParams();
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
+    useEffect(() => {
+
+        async function fetchUserInfo() {
+          try {
+            const userDocRef = doc(db, "users", uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+    
+            if (userDocSnapshot.exists()) {
+              const userData = userDocSnapshot.data() as UserInfo;
+              setUserInfo(userData);
+            } else {
+              console.log("Usuário não encontrado");
+            }
+          } catch (error) {
+            console.error("Erro ao buscar informações do usuário:", error);
+          }
+        }
+    
+        fetchUserInfo();
+      }, [uid]);
+    
     async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
             const image = e.target.files[0];
@@ -141,7 +170,9 @@ export function Profile() {
         <Container>
             
             <div className="mainProfile">
-                <div className="userPhoto">
+            {userInfo ? (
+        <div>
+            <div className="userPhoto">
                 <input
                     type="file"
                     id="profileImageInput"
@@ -157,10 +188,8 @@ export function Profile() {
                     />
                 </label>
                 </div>
-                
                 <h1>{user?.name || "Nome do Usuário"}</h1>
                 <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
-
                 <div className="buttons">
                     <Link to={`/profile/post`}>
                     <button className="btnProfile">Novo Post</button>
@@ -192,6 +221,10 @@ export function Profile() {
                     </div>
                 
                 </div>
+        </div>
+      ) : (
+        <p>Carregando informações do usuário...</p>
+      )}
             </div>
             
         </Container>
