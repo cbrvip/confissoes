@@ -83,7 +83,7 @@ export function Register() {
           <div className="mb-3">
             <Input
               type="text"
-              placeholder="Digite seu nome Completo"
+              placeholder="Digite um nome de exibição"
               name="name"
               error={errors.name?.message}
               register={register}
