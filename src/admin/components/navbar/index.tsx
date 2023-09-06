@@ -11,6 +11,7 @@ export function Navbar() {
                 <Link to="/admin/posts/pending"><li>Posts Pendentes</li></Link>
                 <Link to=""><li>Usuários</li></Link>
                 <Link to="/admin/comments"><li>Comentários</li></Link>
+                <Link to="/"><li>Voltar para o Site</li></Link>
             </ul>
           </nav>
           </>
