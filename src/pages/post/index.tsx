@@ -80,7 +80,7 @@ export function PostDetail() {
         comments: [],
       });
   
-      loadComments(); // Carregue os comentários aqui
+      loadComments();
     }
   
     loadPost();
@@ -143,8 +143,6 @@ export function PostDetail() {
   
     addComment(postId, userId, username, input);
     setInput("");
-  
-    // Carregue novamente os comentários do banco de dados
     loadComments();
   }
   
@@ -154,7 +152,7 @@ export function PostDetail() {
     }
   
     const comments = await getCommentsForPost(id);
-    setCommentList(comments); // Atualize o estado com os comentários
+    setCommentList(comments);
   }
 
   return (
@@ -200,6 +198,8 @@ export function PostDetail() {
           </article>
         </main>
       )}
+
+      
     </Container>
   );
 }

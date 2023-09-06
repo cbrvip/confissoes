@@ -46,8 +46,9 @@ export function Register() {
         uid: user.uid,
         name: data.name,
         email: data.email,
-        username: data.username, // Set the username to the user's UID
+        username: data.username,
         photo: "",
+        admin: 0
       });
 
       handleInfoUser({
@@ -56,6 +57,7 @@ export function Register() {
         email: data.email,
         username: data.username,
         photo: "",
+        admin: 0
       });
 
       toast.success('Usuário cadastrado com sucesso!');

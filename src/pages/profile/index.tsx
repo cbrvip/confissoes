@@ -52,7 +52,6 @@ export function Profile() {
 
             
             if (uid && typeof uid === 'string' && uid.trim() !== '') {
-                // O uid existe e não está vazio, então você pode continuar aqui
                 const userDocRef = doc(db, "users", uid);
                 const userDocSnapshot = await getDoc(userDocRef);
     

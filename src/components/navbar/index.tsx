@@ -9,8 +9,10 @@ import { auth } from "../../services/firebaseConnection";
 
 
 export function Navbar() {
-    
+
     const { user, signed, loadingAuth } = useContext(AuthContext);
+
+    const isAdmin = user && user.admin === 1;
 
     async function handleLogout() {
         await signOut(auth);
@@ -30,6 +32,11 @@ export function Navbar() {
                     {!loadingAuth && signed && (
                     <Link to={`/profile/${user?.uid}`}>
                         <li><span><FaUser size={24} /></span> Meu Perfil</li>
+                    </Link>
+                    )}
+                    {isAdmin && (
+                    <Link to={`/admin`}>
+                        <li><span><FaUser size={24} /></span> Administrador</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (

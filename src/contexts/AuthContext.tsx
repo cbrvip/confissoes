@@ -20,6 +20,7 @@ interface UserProps {
   email: string | null;
   username: string | null;
   photo: string | null;
+  admin: number;
 }
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -33,7 +34,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       if (userAuth) {
         const q = query(collection(db, 'users'), where('uid', '==', userAuth.uid));
         const querySnapshot = await getDocs(q);
-
+  
         if (!querySnapshot.empty) {
           const userData = querySnapshot.docs[0].data();
           setUser({
@@ -41,30 +42,32 @@ function AuthProvider({ children }: AuthProviderProps) {
             name: userData.name,
             email: userAuth.email,
             username: userData.username,
-            photo: userData.photo
+            photo: userData.photo,
+            admin: userData.admin || 0,
           });
         } else {
-          // Handle the case when user data is not found in Firestore
+          // ...
         }
       } else {
         setUser(null);
       }
-
+  
       setLoadingAuth(false);
     });
-
+  
     return () => {
       unsub();
     };
   }, []);
 
-  function handleInfoUser({ name, email, uid, username, photo }: UserProps) {
+  function handleInfoUser({ name, email, uid, username, photo, admin }: UserProps) {
     setUser({
       name,
       email,
       uid,
       username,
-      photo
+      photo,
+      admin
     });
   }
 
