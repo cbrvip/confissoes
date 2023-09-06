@@ -49,8 +49,12 @@ export function Profile() {
 
         async function fetchUserInfo() {
           try {
-            const userDocRef = doc(db, "users", uid);
-            const userDocSnapshot = await getDoc(userDocRef);
+
+            
+            if (uid && typeof uid === 'string' && uid.trim() !== '') {
+                // O uid existe e não está vazio, então você pode continuar aqui
+                const userDocRef = doc(db, "users", uid);
+                const userDocSnapshot = await getDoc(userDocRef);
     
             if (userDocSnapshot.exists()) {
               const userData = userDocSnapshot.data() as UserInfo;
@@ -58,6 +62,9 @@ export function Profile() {
             } else {
               console.log("Usuário não encontrado");
             }
+              } else {
+              }
+            
           } catch (error) {
             console.error("Erro ao buscar informações do usuário:", error);
           }
