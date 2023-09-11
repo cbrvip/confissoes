@@ -23,6 +23,7 @@ interface CommentProps {
   userId: string;
   username: string;
   createdAt: Date;
+  photo: string; // Add this field for the user's profile photo URL
 }
 
 interface ImagePostProps {
@@ -51,6 +52,7 @@ export function PostDetail() {
   const { user } = useContext(AuthContext);
   const [input, setInput] = useState("");
   const [commentList, setCommentList] = useState<CommentProps[]>([]);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     async function loadPost() {
@@ -85,6 +87,7 @@ export function PostDetail() {
   
     loadPost();
   }, [id, navigate]);
+  
   async function getCommentsForPost(postId: string) {
     const commentsRef = collection(db, "comments");
     const queryRef = query(
@@ -103,6 +106,7 @@ export function PostDetail() {
         userId: doc.data().userId,
         username: doc.data().username,
         createdAt: doc.data().createdAt.toDate(),
+        photo: doc.data().photo
       });
     });
 
@@ -132,6 +136,7 @@ export function PostDetail() {
 
   function handleAddComment() {
     if (!user || !user.uid || !user.username || !post) {
+      setShowError(true); // Mostrar mensagem de erro
       return;
     }
   
@@ -152,7 +157,23 @@ export function PostDetail() {
     }
   
     const comments = await getCommentsForPost(id);
-    setCommentList(comments);
+  
+    const commentsWithPhotos = await Promise.all(comments.map(async (comment) => {
+      const userRef = doc(db, "users", comment.userId);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        return {
+          ...comment,
+          photo: userData.photo || ''
+        };
+      } else {
+        return comment;
+      }
+    }));
+  
+    setCommentList(commentsWithPhotos);
+    console.log("Comment List:", commentsWithPhotos); // Adicione este log para verificar a lista de comentários.
   }
 
   return (
@@ -178,12 +199,17 @@ export function PostDetail() {
           </div>
           <article className="postComments">
             <div className="comment">
-              {commentList.map((comment) => (
-                <p key={comment.id}>
-                  <Link to={`/profile/${comment.userId}`}>{comment.username} </Link>:{" "}
-                  <span>{comment.text}</span>
-                </p>
-              ))}
+            {commentList.map((comment) => (
+              <div key={comment.id} className="comment">
+                <div className="user-info">
+                  <Link to={`/profile/${comment.userId}`}>
+                    <img width={30} height={30} src={comment.photo} alt={comment.username} className="user-photo"/>
+                    <span>{comment.username}</span>
+                  </Link>
+                </div>
+                <p>{comment.text}</p>
+              </div>
+            ))}
             </div>
             <input
               className="inputComment"
@@ -192,9 +218,13 @@ export function PostDetail() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
             />
+            {showError && (
+              <div className="error-message">Você precisa estar logado para adicionar um comentário.</div>
+            )}
             <button className="btn-comment" onClick={handleAddComment}>
               Enviar Comentário
             </button>
+            
           </article>
         </main>
       )}
