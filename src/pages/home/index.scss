@@ -9,11 +9,39 @@
     margin-top: 70px;
 
     .postFeed {
-        min-width: 100%;
+        width: 100%;
         height: auto;
         display: flex;
         flex-direction: column;
         padding: 10px 50px;
+
+        .addComment {
+            width: 100%;
+            height: auto;
+
+            .btn-comentar {
+                width: 100%;
+                padding: 10px;
+                color: #fff;
+                border-radius: 20px;
+                margin-top: 10px;
+                border: 2px solid #111;
+                margin-bottom: 15px;
+            }
+        }
+
+        .userPhoto {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+            float: left;
+            margin: 5px 10px;
+        }
+        h1 {
+            font-size: 19px;
+            color: #fff;
+        }
 
 
         .pictureFeed {
@@ -30,20 +58,6 @@
 
         .infoPost {
             width: 100%;
-           
-            .userPhoto {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                overflow: hidden;
-                background-color: #f0f0f0;
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-            }
 
             h1 {
                 font-size: 14px;

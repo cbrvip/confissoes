@@ -53,23 +53,25 @@ export function PostDetail() {
   const [input, setInput] = useState("");
   const [commentList, setCommentList] = useState<CommentProps[]>([]);
   const [showError, setShowError] = useState(false);
+  const [postOwner, setPostOwner] = useState<string | null>(null);
+  const [postOwnerPhoto, setPostOwnerPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadPost() {
       if (!id) {
         return;
       }
-  
+    
       const postRef = doc(db, "posts", id);
       const postSnapshot = await getDoc(postRef);
-  
+    
       if (!postSnapshot.exists()) {
         navigate("/");
         return;
       }
-  
+    
       const postData = postSnapshot.data();
-  
+    
       setPost({
         id: postSnapshot.id,
         title: postData.title,
@@ -81,7 +83,17 @@ export function PostDetail() {
         images: postData.images,
         comments: [],
       });
-  
+    
+      // Buscar as informações do autor do post, incluindo a foto
+      const userRef = doc(db, "users", postData.uid);
+      const userSnapshot = await getDoc(userRef);
+    
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        setPostOwner(userData.username);
+        setPostOwnerPhoto(userData.photo || null);
+      }
+    
       loadComments();
     }
   
@@ -180,6 +192,15 @@ export function PostDetail() {
     <Container>
       {post && (
         <main className="mainPost">
+          <div className="postDetail">
+            
+            
+            {postOwnerPhoto && (
+              <img width={50} height={50} src={postOwnerPhoto} alt={postOwner || ""} className="postOwnerPhoto" />
+            )}
+            {postOwner && <h1>{postOwner}</h1>}
+            <p>{post.description}</p>
+          </div>
           <div className="postImg">
             <Swiper
               slidesPerView={sliderPerView}
@@ -193,10 +214,7 @@ export function PostDetail() {
               ))}
             </Swiper>
           </div>
-          <div className="postDetail">
-            <h1>{post.title}</h1>
-            <p>{post.description}</p>
-          </div>
+          
           <article className="postComments">
             <div className="comment">
             {commentList.map((comment) => (

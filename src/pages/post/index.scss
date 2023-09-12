@@ -12,13 +12,15 @@
             width: 100%;
             height: 500px;
             object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
         }
     
     }
 
     .postDetail {
         width: 100%;
-
+        height: auto;
 
         h1 {
             color: #FFF;
@@ -27,6 +29,14 @@
         p {
             color: #9a9a9a;
             margin-bottom: 7px;
+        }
+        .postOwnerPhoto {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 50%;
+            float: left;
+            margin: 10px 10px 0 0; 
         }
     }
 
@@ -76,10 +86,13 @@
 
 @media (max-width: 924px) {
     .mainPost {
-        margin-top: 40px;
+        margin-top: 75px;
     }
     .imgPost {
         z-index: -999;
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
     }
 }
 
@@ -87,7 +100,9 @@
     width: 45px;
     height: 45px;
     border-radius: 50%;
+    margin-right: 5px;
     float: left;
+    margin-top: 2px;
 }
 .error-message {
     color: red;

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import {
     collection,
     query,
+    doc,
+    getDoc,
     getDocs,
     orderBy
 } from "firebase/firestore";
@@ -17,6 +19,7 @@ interface PostProps {
   uid: string;
   images: PostImageProps[];
   comments: CommentProps[];
+  owner: string;
 }
 
 interface CommentProps {
@@ -36,6 +39,7 @@ interface PostImageProps{
 export function Home() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
+  const [users, setUsers] = useState<Record<string, any>>({});
 
   useEffect(() => {
       loadPosts();
@@ -58,12 +62,38 @@ export function Home() {
                 images: postData.images,
                 uid: postData.uid,
                 comments: [],
+                owner: postData.owner
             });
         }
     }
 
       setPosts(postsData);
   }
+
+  async function loadUser(uid: string) {
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    if (userDocSnapshot.exists()) {
+      const userData = userDocSnapshot.data();
+      console.log("Dados do usuário carregados com sucesso:", userData);
+      setUsers((prevUsers) => ({
+        ...prevUsers,
+        [uid]: userData,
+      }));
+      console.log("Estado users atualizado:", users);
+    } else {
+      console.log("Dados do usuário não encontrados para UID:", uid);
+    }
+  }
+
+  useEffect(() => {
+    // Carregue os detalhes do usuário para cada post
+    posts.forEach((post) => {
+      if (!users[post.uid]) {
+        loadUser(post.uid);
+      }
+    });
+  }, [posts, users]);
 
   function handleImageLoad(id: string) {
       setLoadImages((prevImageLoaded) => [...prevImageLoaded, id])
@@ -73,13 +103,24 @@ export function Home() {
       <>
       <Container>
           
-          <div className="feed">
+      <div className="feed">
               {posts.map( post => (
               <section className="postFeed" key={post.id}>
-                  <div
-                      className="w-full rounded-lg bg-slate-200"
-                      style={{ display: loadImages.includes(post.id) ? "none": "block"}}
-                  ></div>
+                <div className="infoPost">
+                    {users[post.uid] ? (
+                        <img
+                        src={users[post.uid].photo}
+                        alt={`Foto de ${users[post.uid].name}`}
+                        width={45}
+                        height={45}
+                        className="userPhoto"
+                        />
+                        ) : (
+                            <div>Carregando...</div>
+                        )}
+                    <h1>{post.owner}</h1>
+                    <h2>{post.description}</h2>
+                </div>
                   <div className="pictureFeed">
                   <Link key={post.id} to={`/post/${post.id}`}>
                       <img
@@ -89,15 +130,18 @@ export function Home() {
                       style={{ display: loadImages.includes(post.id) ? "block" : "none" }}
                       />
                   </Link>
+                  
                   </div>
-                  <div className="infoPost">
-                      <h1>{post.title}</h1>
-                      <h2>{post.description}</h2>
-                  </div>
+                  <div className="addComment">
+                    <Link key={post.id} to={`/post/${post.id}`}>
+                        <button className="btn-comentar">
+                            Comentar
+                        </button>
+                    </Link>
+                </div>
               </section>
               
               ))}
-              
           </div>
       </Container>
       </>
