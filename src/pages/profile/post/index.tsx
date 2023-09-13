@@ -19,7 +19,6 @@ import { addDoc, collection} from "firebase/firestore";
 import './index.scss';
 
 const schema = z.object({
-    title: z.string().nonempty("O campo titúlo é obrigatório"),
     description: z.string().nonempty("O campo descrição é obrigatório"),
 })
 
@@ -141,7 +140,6 @@ export function Post() {
         }
     
         const postData = {
-            title: data.title.toUpperCase(),
             description: data.description,
             created: new Date(),
             owner: user?.name,
@@ -184,7 +182,7 @@ export function Post() {
                 <div className="w-full p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2">
                 <button className="border-2 w-48 rounded-lg flex items-center justify-center cursor-pointer border-gray-600 h-32 md:w-48">
                     <div className="absolute cursor-pointer">
-                        <FiUpload size={30} color="#FFF"></FiUpload>
+                        <FiUpload size={30} color="#000"></FiUpload>
                     </div>
                     <div className="cursor-pointer">
                     <input
@@ -208,16 +206,6 @@ export function Post() {
                 className="w-full"
                 onSubmit={handleSubmit(onSubmit)}
                 >
-                    <div className="inputForm">
-                        <p>Titulo</p>
-                        <Input 
-                        type="text"
-                        register={register}
-                        name="title"
-                        error={errors.title?.message}
-                        placeholder="Digite um titúlo para a postagem..."
-                        />
-                    </div>
                     <div className="inputForm">
                         <p>Descrição do Post</p>
                         <Input 

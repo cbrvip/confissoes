@@ -1,27 +1,25 @@
 @import '../../index.scss';
 
 .navbar {
-    width: 30%;
+    width: 100%;
 
     nav {
         width: 100%;
-        min-height: 100%;
-        border-right: 1px solid #111;
+        height: 60px;
         
         ul {
+            width: 100%;
             list-style: none;
-            flex-direction: column;
+            display: flex;
 
             li {
-                color: $text-primary;
-                border-radius: 25px;
-                padding: 10px 0;
-                margin-right: 5px;
-                margin-top: 10px;
+                color: $text-white;
+                line-height: 30px;
                 font-size: 25px;
                 text-decoration: none;
-                font-weight: 300;
-                padding: 15px 15px;
+                font-weight: 400;
+                padding: 13px;
+                border: 1px solid #6000d5;
 
                     span {
                         margin-right: 12px;
@@ -29,8 +27,9 @@
                     }
 
                 &:hover {
-                    background-color: #111;
-                    transition: 0.4s;
+                  border: 1px solid #fff;
+                  border-radius: 10px;
+                  color: #fff;
                 }
             }
         }
@@ -43,7 +42,9 @@
     flex-direction: column;
     cursor: pointer;
     padding: 11px;
+    margin-left: -380px;
     position: absolute;
+    border-radius: 10px;
     background-color: #111;
   }
   

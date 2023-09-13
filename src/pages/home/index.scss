@@ -6,14 +6,20 @@
     display: flex;
     margin-top: 40px;
     flex-direction: column;
-    margin-top: 70px;
+    margin-top: 95px;
+    background: #fff;
+    border-radius: 15px;
+    
+    h2 {
+        color: $text-primary;;
+    }
 
     .postFeed {
         width: 100%;
         height: auto;
         display: flex;
         flex-direction: column;
-        padding: 10px 50px;
+        padding: 30px 50px;
 
         .addComment {
             width: 100%;
@@ -22,7 +28,7 @@
             .btn-comentar {
                 width: 100%;
                 padding: 10px;
-                color: #fff;
+                color: $text-primary;
                 border-radius: 20px;
                 margin-top: 10px;
                 border: 2px solid #111;
@@ -31,8 +37,8 @@
         }
 
         .userPhoto {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 50%;
             float: left;
@@ -40,7 +46,7 @@
         }
         h1 {
             font-size: 19px;
-            color: #fff;
+            color: $text-primary;
         }
 
 
@@ -62,11 +68,11 @@
             h1 {
                 font-size: 19px;
                 color: $text-primary;
-                font-weight: 400;
+                font-weight: 500;
                 padding: 12px 0 5px 0;
             }
             h2 {
-                font-size: 14px;
+                font-size: 16px;
                 color: $text-secondary;
                 font-weight: 400;
                 padding: 0 0 15px 0;
@@ -103,7 +109,7 @@
     border-radius: 20px;
     padding: 15px 20px;
     background-color: rgb(8, 8, 8);
-    color: #FFF;
+    color: $text-white;
 }
 
 @media (max-width: 924px) {

@@ -282,7 +282,7 @@ export function PostDetail() {
             )}
           </div>
           <article className="postComments">
-            <div className="comment">
+            <div className="comments">
             {commentList.map((comment) => (
               <div key={comment.id} className="comment">
                 <div className="user-info">

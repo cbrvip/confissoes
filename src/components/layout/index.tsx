@@ -6,11 +6,11 @@ import { Navbar } from "../navbar";
 
 export function Layout() {
     return (
+        <>
+        <Header />
         <div className="box">
-            <Header />
-            <Navbar />
             <Outlet />
-            <Sidebar />
         </div>
+        </>
     )
 }

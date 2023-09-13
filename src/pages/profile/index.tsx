@@ -251,7 +251,7 @@ export function Profile() {
                   </div>
                   {signed && user && user.uid === post.uid && (
                       <button
-                        className="btn-comment"
+                        className="btn-delete"
                         onClick={() => handleDeletePost(post)}
                       >
                        <FiTrash2 size={24} /> Excluir
