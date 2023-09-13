@@ -8,6 +8,7 @@ import { Navbar } from '../navbar';
 export function Header() {
     return(
         <div className="header">
+            <div className="box">
             <Container>
                 <NavMobile />
                 
@@ -20,6 +21,7 @@ export function Header() {
                 <Navbar />
 
             </Container>
+            </div>
         </div>
     )
 }

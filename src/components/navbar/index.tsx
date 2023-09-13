@@ -22,35 +22,35 @@ export function Navbar() {
         <div className="navbar">
             <nav>
                 <ul>
-                    <li><a href="/"><span><FaHouseChimney size={24} /></span> Página Inicial</a></li>
+                    <li><a href="/"><span><FaHouseChimney size={14} /></span> Página Inicial</a></li>
                     {!loadingAuth && signed && (
                     <Link to={`/profile/${user?.username}`}>
-                        <li><span><FaUser size={24} /></span> Meu Perfil</li>
+                        <li><span><FaUser size={14} /></span> Meu Perfil</li>
                     </Link>
                     )}
                     {isAdmin && (
                     <Link to={`/admin`}>
-                        <li><span><FaUser size={24} /></span> Administrador</li>
+                        <li><span><FaUser size={14} /></span> Administrador</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (
                     <Link to={"/profile/post"}>
-                        <li><span><FaPhotoFilm size={24} /></span> Novo Post</li>
+                        <li><span><FaPhotoFilm size={14} /></span> Novo Post</li>
                     </Link>
                     )}
                     {!loadingAuth && signed && (
                     <Link to={"/"} onClick={handleLogout}>
-                        <li><span><FaCircleLeft size={24} /></span> Logout</li>
+                        <li><span><FaCircleLeft size={14} /></span> Logout</li>
                     </Link>
                     )}
                     {!loadingAuth && !signed && (
                         <Link to={"/login"}>
-                            <li><span><FaUser size={24} /></span> Login</li>
+                            <li><span><FaUser size={14} /></span> Login</li>
                         </Link>
                     )}
                     {!loadingAuth && !signed && (
                         <Link to={"/register"}>
-                            <li><span><FaUserPlus size={24} /></span> Cadastrar-se</li>
+                            <li><span><FaUserPlus size={14} /></span> Cadastrar-se</li>
                         </Link>
                     )}
                     
