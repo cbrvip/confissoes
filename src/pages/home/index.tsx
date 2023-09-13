@@ -21,6 +21,7 @@ interface PostProps {
   comments: CommentProps[];
   videos: VideoPostProps[];
   owner: string;
+  username: string;
 }
 interface VideoPostProps {
   uid: string;
@@ -68,7 +69,8 @@ export function Home() {
                 videos: postData.videos,
                 uid: postData.uid,
                 comments: [],
-                owner: postData.owner
+                owner: postData.owner,
+                username: postData.username
             });
         }
     }
@@ -93,7 +95,6 @@ export function Home() {
   }
 
   useEffect(() => {
-    // Carregue os detalhes do usuário para cada post
     posts.forEach((post) => {
       if (!users[post.uid]) {
         loadUser(post.uid);
@@ -124,7 +125,7 @@ export function Home() {
                         ) : (
                             <div>Carregando...</div>
                         )}
-                    <h1>{post.owner}</h1>
+                   <Link to={`/profile/${post.username}`}><h1>{post.owner}</h1></Link>
                     <h2>{post.description}</h2>
                 </div>
                   <div className="pictureFeed">

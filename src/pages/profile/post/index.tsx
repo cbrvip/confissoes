@@ -145,6 +145,7 @@ export function Post() {
             description: data.description,
             created: new Date(),
             owner: user?.name,
+            username: user?.username,
             uid: user?.uid,
             approved: 0,
             images: images,

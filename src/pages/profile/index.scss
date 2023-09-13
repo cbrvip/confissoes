@@ -3,11 +3,44 @@
 
 .mainProfile {
     width: 100%;
-    height: 100vh;
+    height: 100%;
     justify-content: center;
     flex-direction: column;
     align-items: center;
     margin-top: 50px;
+
+    .mainPost {
+        width: 100%;
+        flex-direction: column;
+        display: flex;
+
+        h2 {
+            font-size: 20px;
+            color: #fff;
+            margin-top: 17px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #9a9a9a;
+            margin-top: 10px;
+            margin-bottom: 17px;
+        }
+        .user-photo {
+            margin: 10px 10px;
+        }
+        .postImg {
+            border-radius: 10px;
+        }
+        .videoplayer {
+            width: 100%;
+        
+            .playerVideo {
+                width: 100%;
+                height: 500px;
+            }
+        
+        }
+    }
 
     h1 {
         font-size: 32px;
@@ -40,7 +73,6 @@
     }
 
     p {
-
         color: #9a9a9a;
         padding-bottom: 15px;
         text-align: center;

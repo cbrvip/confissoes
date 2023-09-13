@@ -1,7 +1,7 @@
 import { Container } from "../../components/container";
 import { useEffect, useState, useContext, ChangeEvent } from "react";
 import { FiTrash2 } from "react-icons/fi";
-import { collection, getDocs, getDoc, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../services/firebaseConnection";
 import { AuthContext } from "../../contexts/AuthContext";
 import './index.scss';
@@ -15,7 +15,7 @@ interface PostProps {
     title: string;
     description: string;
     images: ImagePostProps[];
-    videos: VideoPostProps[]; // Add this field for videos
+    videos: VideoPostProps[];
     uid: string;
   }
   
@@ -39,6 +39,7 @@ interface PhotoProfile {
 interface UserInfo {
     name: string;
     email: string;
+    photo: string;
   }
 
 
@@ -47,35 +48,32 @@ export function Profile() {
     const [posts, setPosts] = useState<PostProps[]>([]);
     const [profileImageUrl, setProfileImageUrl] = useState<string | null>("");
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
-    const { uid } = useParams();
+    const { username } = useParams(); // Obtenha o 'username' da URL
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
     useEffect(() => {
-
         async function fetchUserInfo() {
+            console.log("Username da URL:", username);
           try {
-
-            
-            if (uid && typeof uid === 'string' && uid.trim() !== '') {
-                const userDocRef = doc(db, "users", uid);
-                const userDocSnapshot = await getDoc(userDocRef);
+            if (username && typeof username === 'string' && username.trim() !== '') {
+              const userQuery = query(collection(db, "users"), where("username", "==", username));
+              const userQuerySnapshot = await getDocs(userQuery);
     
-            if (userDocSnapshot.exists()) {
-              const userData = userDocSnapshot.data() as UserInfo;
-              setUserInfo(userData);
-            } else {
-              console.log("Usuário não encontrado");
-            }
+              if (!userQuerySnapshot.empty) {
+                const userData = userQuerySnapshot.docs[0].data() as UserInfo;
+                setUserInfo(userData);
               } else {
+                console.log("Usuário não encontrado");
+                // Lide com o caso em que o usuário não é encontrado
               }
-            
+            }
           } catch (error) {
             console.error("Erro ao buscar informações do usuário:", error);
           }
         }
     
         fetchUserInfo();
-      }, [uid]);
+      }, [username]);
     
     async function handleProfileImageUpload(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
@@ -122,125 +120,150 @@ export function Profile() {
 
     useEffect(() => {
         function loadPosts() {
-
-            if (!signed || !user) {
-                return;
-            }
-            
-
-            const postsRef = collection(db, "posts");
-            const queryRef = query(postsRef, where("uid", "==", user.uid));
-
-            getDocs(queryRef).then((snapshot) => {
-            let listposts = [] as PostProps[];
-
-            snapshot.forEach((doc) => {
-                listposts.push({
-                id: doc.id,
-                name: doc.data().name,
-                title: doc.data().title,
-                description: doc.data().description,
-                images: doc.data().images,
-                videos: doc.data().videos, // Fetch videos as well
-                uid: doc.data().uid,
+          if (!username) {
+            return;
+          }
+          const usersRef = collection(db, "users");
+          const userQuery = query(usersRef, where("username", "==", username));
+          
+          getDocs(userQuery)
+            .then((userQuerySnapshot) => {
+              if (!userQuerySnapshot.empty) {
+                const userDoc = userQuerySnapshot.docs[0];
+                const userUid = userDoc.id;
+                const postsRef = collection(db, "posts");
+                const queryRef = query(postsRef, where("uid", "==", userUid));
+                
+                getDocs(queryRef).then((snapshot) => {
+                  // Atualize os posts com os dados do usuário cujo perfil está sendo visualizado
+                  let listposts = [] as PostProps[];
+      
+                  snapshot.forEach((doc) => {
+                    listposts.push({
+                      id: doc.id,
+                      name: doc.data().name,
+                      title: doc.data().title,
+                      description: doc.data().description,
+                      images: doc.data().images,
+                      videos: doc.data().videos,
+                      uid: doc.data().uid,
+                    });
+                  });
+      
+                  setPosts(listposts);
                 });
-            });
-
-            setPosts(listposts);
+              }
+            })
+            .catch((error) => {
+              console.error("Erro ao buscar usuário:", error);
             });
         }
-
+      
         loadPosts();
+      }, [username]);
 
-    }, [signed, user]);
+      async function handleDeletePost(post: PostProps) {
+        // Verifique se o usuário logado é o proprietário do post antes de permitir a exclusão
+        if (user && user.uid === post.uid) {
+            const itemPost = post;
+            const docRef = doc(db, "posts", itemPost.id);
+            await deleteDoc(docRef);
 
-    async function handleDeletePost(post: PostProps) {
+            itemPost.images.map(async (image) => {
+                const imagePath = `images/${image.uid}/${image.name}`;
+                const imageRef = ref(storage, imagePath)
 
-        const itemPost = post;
-
-        const docRef = doc(db, "posts", itemPost.id);
-        await deleteDoc(docRef);
-
-        itemPost.images.map( async (image) => {
-            const imagePath = `images/${image.uid}/${image.name}`;
-            const imageRef = ref(storage, imagePath)
-
-            try {
-                await deleteObject(imageRef)
-                setPosts(posts.filter(post => post.id !== itemPost.id));
-            } catch(err) {
-
-            }
-            
-        })
+                try {
+                    await deleteObject(imageRef);
+                    setPosts(posts.filter((post) => post.id !== itemPost.id));
+                } catch (err) {
+                    console.error("Erro ao excluir imagem:", err);
+                }
+            });
+        } else {
+            // Exiba uma mensagem de erro ou feedback para o usuário
+            console.error("Você não tem permissão para excluir este post.");
+            // Exibir uma mensagem de erro para o usuário (por exemplo, usando um toast)
+            toast.error("Você não tem permissão para excluir este post.");
+        }
     }
-
 
     return (
         <Container>
-            
-            <div className="mainProfile">
+          <div className="mainProfile">
             {userInfo ? (
-        <div>
-            <div className="userPhoto">
-                <input
+              <div>
+                <div className="userPhoto">
+                  <input
                     type="file"
                     id="profileImageInput"
                     onChange={handleProfileImageUpload}
                     style={{ display: 'none' }}
                     accept="image/jpeg, image/png"
-                />
-                <label htmlFor="profileImageInput">
+                  />
+                  <label htmlFor="profileImageInput">
                     <img
-                        src={user?.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
-                        className="photoPerfil"
-                        style={{ cursor: 'pointer' }}
+                      src={userInfo.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                      className="photoPerfil"
+                      style={{ cursor: 'pointer' }}
                     />
-                </label>
+                  </label>
                 </div>
-                <h1>{user?.name || "Nome do Usuário"}</h1>
-                <p><Link to={`/profile/${user?.uid}`}>{user?.username || "Username"}</Link></p>
+                <h1>{userInfo.name || "Nome do Usuário"}</h1>
+                <p><Link to={`/profile/${username}`}>{username || "Username"}</Link></p>
                 <div className="buttons">
+                {signed && user && user.username === username && (
                     <Link to={`/profile/post`}>
-                    <button className="btnProfile">Novo Post</button>
+                      <button className="btnProfile">Novo Post</button>
                     </Link>
+                  )}
                 </div>
-
-                <div className="myPosts">
-                    <h2>Publicações</h2>
-
-                    <div className="posts">
-                    {posts.map((post) => (
-                    <section key={post.id} className="recentPost">
-                        <Link key={post.id} to={`/post/${post.id}`}>
-                        {post.images.length > 0 ? (
-                            <img src={post.images[0]?.url} alt="" className="imgProfile" />
-                        ) : post.videos.length > 0 ? (
-                            <video controls>
-                            <source src={post.videos[0]?.url} type="video/mp4" />
-                            Seu navegador não tem suporte para este player de video!
-                            </video>
-                        ) : (
-                            <p>Erro ao carregar o video</p>
-                        )}
-                        </Link>
-                        <button
-                        className="btn-delete"
-                        onClick={() => handleDeletePost(post)}
+                {posts.map((post) => (
+                <div className="mainPost">
+                  <div className="postDetail">
+                  <img
+                      src={userInfo.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                      className="user-photo"
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <h2><Link to={`/profile/${username}`}>{username || "Username"}</Link></h2>
+                    <h3>{post.description}</h3>
+                  </div>
+                  
+                  <div className="postImg">
+                  {post.images.length > 0 ? (
+                      <img src={post.images[0]?.url} alt="" className="imgPost" />
+                    ) : post.videos.length > 0 ? (
+                        <div className="videoplayer">
+                        <video
+                            id="my-player"
+                            className="playerVideo"
+                            preload="auto"
+                            controls
+                            controlsList="nodownload"
                         >
-                        <FiTrash2 size={0} color="#fff" />
-                        </button>
-                    </section>
-                    ))}
-                    </div>
-                
+                            <source src={post?.videos[0].url} type="video/mp4" />
+                        </video>
+                        </div>
+                    ) : (
+                      <p>Erro ao carregar o vídeo</p>
+                    )}
+                  </div>
+                  {signed && user && user.uid === post.uid && (
+                      <button
+                        className="btn-comment"
+                        onClick={() => handleDeletePost(post)}
+                      >
+                       <FiTrash2 size={24} /> Excluir
+                      </button>
+                    )}
                 </div>
-        </div>
-      ) : (
-        <p>Carregando informações do usuário...</p>
-      )}
-            </div>
-            
+                ))}
+              </div>
+            ) : (
+              <p>Carregando informações do usuário...</p>
+            )}
+          </div>
         </Container>
-    )
+      )
 }

@@ -286,7 +286,7 @@ export function PostDetail() {
             {commentList.map((comment) => (
               <div key={comment.id} className="comment">
                 <div className="user-info">
-                  <Link to={`/profile/${comment.userId}`}>
+                  <Link to={`/profile/${comment.username}`}>
                     <img width={30} height={30} src={comment.photo} alt={comment.username} className="user-photo"/>
                     <span>{comment.username}</span>
                   </Link>

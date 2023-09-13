@@ -55,7 +55,7 @@ const NavMobile: React.FC = () => {
           </li>
           {!loadingAuth && signed && (
             <li>
-              <Link to={`/profile/${user?.uid}`} onClick={closeMenu}>
+              <Link to={`/profile/${user?.username}`} onClick={closeMenu}>
                 <span><FaUser size={24} /></span> Meu Perfil
               </Link>
             </li>

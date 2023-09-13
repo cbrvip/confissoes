@@ -30,7 +30,7 @@ export function Navbar() {
                 <ul>
                     <li><a href="/"><span><FaHouseChimney size={24} /></span> Página Inicial</a></li>
                     {!loadingAuth && signed && (
-                    <Link to={`/profile/${user?.uid}`}>
+                    <Link to={`/profile/${user?.username}`}>
                         <li><span><FaUser size={24} /></span> Meu Perfil</li>
                     </Link>
                     )}
