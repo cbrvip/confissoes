@@ -26,11 +26,12 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 
-interface ImageItemProps{
+interface ImageItemProps {
     uid: string;
     name: string;
     previewUrl: string;
     url: string;
+    type: "image" | "video"; // Add a "type" property to distinguish between images and videos
 }
 
 export function Post() {
@@ -44,81 +45,120 @@ export function Post() {
     const [postImages, setPostImages] = useState<ImageItemProps[]>([]);
 
     async function handleFile(e: ChangeEvent<HTMLInputElement>) {
-        if(e.target.files && e.target.files[0]) {
-            const image = e.target.files[0]
-
-            if(image.type === 'image/jpeg' || image.type === 'image/png') {
-               await handleUpload(image)
-            }else {
-                alert('A imagem deve ser JPEG ou PNG!');
-                return;
-            }
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+      
+          if (file.type === 'image/jpeg' || file.type === 'image/png') {
+            await handleUpload(file);
+          } else if (file.type === 'video/mp4') {
+            await handleVideoUpload(file);
+          } else {
+            alert('O arquivo deve ser uma imagem (JPEG ou PNG) ou um vídeo (MP4).');
+            return;
+          }
         }
+      }
+
+      async function handleVideoUpload(video: File) {
+        if (!user?.uid) {
+            return;
+        }
+    
+        const currentUid = user?.uid;
+        const videoUid = uuidV4();
+    
+        const uploadRef = ref(storage, `videos/${currentUid}/${videoUid}`);
+    
+        uploadBytes(uploadRef, video)
+            .then((snapshot) => {
+                getDownloadURL(snapshot.ref).then((downloadURL) => {
+                    const videoItem: ImageItemProps = {
+                        name: videoUid,
+                        uid: currentUid,
+                        previewUrl: '', // You can set a preview URL for videos if needed.
+                        url: downloadURL,
+                        type: "video", // Set the type to "video"
+                    };
+    
+                    setPostImages((images) => [...images, videoItem]);
+    
+                    console.log(downloadURL);
+                });
+            });
     }
 
     async function handleUpload(image: File) {
-        if(!user?.uid) {
+        if (!user?.uid) {
             return;
         }
-
+    
         const currentUid = user?.uid;
         const uidImage = uuidV4();
-
+    
         const uploadRef = ref(storage, `images/${currentUid}/${uidImage}`);
-
+    
         uploadBytes(uploadRef, image)
-        .then((snapshot) => {
-            getDownloadURL(snapshot.ref).then((downloadURL) => {
-                const imageItem = {
-                    name: uidImage,
-                    uid: currentUid,
-                    previewUrl: URL.createObjectURL(image),
-                    url: downloadURL,
-                }
-
-                setPostImages((images) => [...images, imageItem] );
-                
-                console.log(downloadURL);
-            })
-        })
-
+            .then((snapshot) => {
+                getDownloadURL(snapshot.ref).then((downloadURL) => {
+                    const imageItem: ImageItemProps = {
+                        name: uidImage,
+                        uid: currentUid,
+                        previewUrl: URL.createObjectURL(image),
+                        url: downloadURL,
+                        type: "image", // Set the type to "image"
+                    };
+    
+                    setPostImages((images) => [...images, imageItem]);
+    
+                    console.log(downloadURL);
+                });
+            });
     }
 
-    function onSubmit(data: FormData) {
-
-        if(postImages.length === 0) {
-            toast.error("Envie pelo menos uma imagem do post!")
+    async function onSubmit(data: FormData) {
+        if (postImages.length === 0) {
+            toast.error("Envie pelo menos uma imagem ou vídeo do post!");
             return;
         }
-
-        const postListImages = postImages.map ( post => {
-            return{
-                uid: post.uid,
-                name: post.name,
-                url: post.url
+    
+        const images = [];
+        const videos = [];
+    
+        for (const post of postImages) {
+            if (post.type === "video") {
+                videos.push({
+                    uid: post.uid,
+                    name: post.name,
+                    url: post.url,
+                });
+            } else {
+                images.push({
+                    uid: post.uid,
+                    name: post.name,
+                    url: post.url,
+                });
             }
-        })
-
-        addDoc(collection(db, "posts"), {
+        }
+    
+        const postData = {
             title: data.title.toUpperCase(),
             description: data.description,
             created: new Date(),
             owner: user?.name,
             uid: user?.uid,
             approved: 0,
-            images: postListImages,
-        })
-        .then(() => {
+            images: images,
+            videos: videos,
+        };
+    
+        try {
+            await addDoc(collection(db, "posts"), postData);
             reset();
             setPostImages([]);
-            toast.success("Post cadastrado com sucesso!")
-            
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-
-        console.log(data);
+            toast.success("Post cadastrado com sucesso!");
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     async function handleDeleteImage(item: ImageItemProps) {
@@ -146,7 +186,12 @@ export function Post() {
                         <FiUpload size={30} color="#FFF"></FiUpload>
                     </div>
                     <div className="cursor-pointer">
-                        <input className="opacity-0 cursor-pointer" type="file" accept="image/*" onChange={handleFile} />
+                    <input
+                    className="opacity-0 cursor-pointer"
+                    type="file"
+                    accept="image/*, video/mp4"
+                    onChange={handleFile}
+                    />
                     </div>
                 </button>
                 {postImages.map( item => (

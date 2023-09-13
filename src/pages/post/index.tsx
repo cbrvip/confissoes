@@ -32,6 +32,12 @@ interface ImagePostProps {
   url: string;
 }
 
+interface VideoPostProps {
+  uid: string;
+  name: string;
+  url: string;
+}
+
 interface PostProps {
   id: string;
   title: string;
@@ -41,6 +47,7 @@ interface PostProps {
   owner: string;
   created: string;
   images: ImagePostProps[];
+  videos: VideoPostProps[]; // Add this property for videos
   comments: CommentProps[];
 }
 
@@ -82,6 +89,7 @@ export function PostDetail() {
         created: postData.created,
         images: postData.images,
         comments: [],
+        videos: postData.videos
       });
     
       // Buscar as informações do autor do post, incluindo a foto
@@ -185,7 +193,7 @@ export function PostDetail() {
     }));
   
     setCommentList(commentsWithPhotos);
-    console.log("Comment List:", commentsWithPhotos); // Adicione este log para verificar a lista de comentários.
+    console.log("Comment List:", commentsWithPhotos);
   }
 
   return (
@@ -193,28 +201,36 @@ export function PostDetail() {
       {post && (
         <main className="mainPost">
           <div className="postDetail">
-            
-            
             {postOwnerPhoto && (
               <img width={50} height={50} src={postOwnerPhoto} alt={postOwner || ""} className="postOwnerPhoto" />
             )}
             {postOwner && <h1>{postOwner}</h1>}
-            <p>{post.description}</p>
+          </div>
+          <div className="postDetail">
+          <p>{post.description}</p>
           </div>
           <div className="postImg">
-            <Swiper
-              slidesPerView={sliderPerView}
-              pagination={{ clickable: true }}
-              navigation
-            >
-              {post?.images.map((image) => (
-                <SwiperSlide key={image.name}>
-                  <img src={image.url} className="imgPost" alt={image.name} />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            {post?.images.length > 0 ? (
+              <Swiper
+                slidesPerView={sliderPerView}
+                pagination={{ clickable: true }}
+                navigation
+              >
+                {post?.images.map((image) => (
+                  <SwiperSlide key={image.name}>
+                    <img src={image.url} className="imgPost" alt={image.name} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <iframe
+                width="100%"
+                height="500"
+                src={post?.videos[0].url}
+                title="Video"
+              ></iframe>
+            )}
           </div>
-          
           <article className="postComments">
             <div className="comment">
             {commentList.map((comment) => (
