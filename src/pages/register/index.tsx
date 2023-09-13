@@ -12,6 +12,7 @@ import { setDoc, doc } from 'firebase/firestore';
 import { db } from '../../services/firebaseConnection';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { Header } from '../../components/header';
 
 const schema = z.object({
   name: z.string().nonempty("O campo nome é obrigatório"),
@@ -69,6 +70,8 @@ export function Register() {
   }
 
   return (
+    <>
+    <Header />
     <Container>
       <div className="w-full min-h-screen flex justify-center items-center flex-col gap-4">
         <Link to="/" className="mb-6 max-w-sm w-full">
@@ -128,5 +131,6 @@ export function Register() {
         </form>
       </div>
     </Container>
+    </>
   )
 }
