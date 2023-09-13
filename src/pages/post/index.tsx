@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { Container } from "../../components/container";
 import { useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -23,7 +23,7 @@ interface CommentProps {
   userId: string;
   username: string;
   createdAt: Date;
-  photo: string; // Add this field for the user's profile photo URL
+  photo: string;
 }
 
 interface ImagePostProps {
@@ -47,7 +47,7 @@ interface PostProps {
   owner: string;
   created: string;
   images: ImagePostProps[];
-  videos: VideoPostProps[]; // Add this property for videos
+  videos: VideoPostProps[];
   comments: CommentProps[];
 }
 
@@ -62,6 +62,7 @@ export function PostDetail() {
   const [showError, setShowError] = useState(false);
   const [postOwner, setPostOwner] = useState<string | null>(null);
   const [postOwnerPhoto, setPostOwnerPhoto] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     async function loadPost() {
@@ -91,8 +92,7 @@ export function PostDetail() {
         comments: [],
         videos: postData.videos
       });
-    
-      // Buscar as informações do autor do post, incluindo a foto
+  
       const userRef = doc(db, "users", postData.uid);
       const userSnapshot = await getDoc(userRef);
     
@@ -156,7 +156,7 @@ export function PostDetail() {
 
   function handleAddComment() {
     if (!user || !user.uid || !user.username || !post) {
-      setShowError(true); // Mostrar mensagem de erro
+      setShowError(true);
       return;
     }
   
@@ -196,6 +196,50 @@ export function PostDetail() {
     console.log("Comment List:", commentsWithPhotos);
   }
 
+  useEffect(() => {
+    async function loadPost() {
+      if (!id) {
+        return;
+      }
+    
+      const postRef = doc(db, "posts", id);
+      const postSnapshot = await getDoc(postRef);
+    
+      if (!postSnapshot.exists()) {
+        navigate("/");
+        return;
+      }
+    
+      const postData = postSnapshot.data();
+    
+      setPost({
+        id: postSnapshot.id,
+        title: postData.title,
+        description: postData.description,
+        name: postData.name,
+        uid: postData.uid,
+        owner: postData.owner,
+        created: postData.created,
+        images: postData.images,
+        comments: [],
+        videos: postData.videos
+      });
+  
+      const userRef = doc(db, "users", postData.uid);
+      const userSnapshot = await getDoc(userRef);
+    
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        setPostOwner(userData.username);
+        setPostOwnerPhoto(userData.photo || null);
+      }
+    
+      loadComments();
+    }
+  
+    loadPost();
+  }, [id, navigate]);
+
   return (
     <Container>
       {post && (
@@ -223,12 +267,18 @@ export function PostDetail() {
                 ))}
               </Swiper>
             ) : (
-              <iframe
-                width="100%"
-                height="500"
-                src={post?.videos[0].url}
-                title="Video"
-              ></iframe>
+              <div className="videoplayer">
+              <video
+                id="my-player"
+                ref={videoRef}
+                className="playerVideo"
+                preload="auto"
+                controls
+                controlsList="nodownload"
+              >
+                <source src={post?.videos[0].url} type="video/mp4" />
+              </video>
+              </div>
             )}
           </div>
           <article className="postComments">
@@ -253,7 +303,7 @@ export function PostDetail() {
               onChange={(e) => setInput(e.target.value)}
             />
             {showError && (
-              <div className="error-message">Você precisa estar logado para adicionar um comentário.</div>
+              <div className="error-message">Você precisa estar logado para adicionar um comentário. <span><Link to={`/login`}>Logar</Link> / <Link to={`/register`}>Cadastrar</Link></span></div>
             )}
             <button className="btn-comment" onClick={handleAddComment}>
               Enviar Comentário
@@ -262,8 +312,6 @@ export function PostDetail() {
           </article>
         </main>
       )}
-
-      
     </Container>
   );
 }

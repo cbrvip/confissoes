@@ -19,9 +19,14 @@ interface PostProps {
   uid: string;
   images: PostImageProps[];
   comments: CommentProps[];
+  videos: VideoPostProps[];
   owner: string;
 }
-
+interface VideoPostProps {
+  uid: string;
+  name: string;
+  url: string;
+}
 interface CommentProps {
   id: string;
   text: string;
@@ -60,6 +65,7 @@ export function Home() {
                 title: postData.title,
                 description: postData.description,
                 images: postData.images,
+                videos: postData.videos,
                 uid: postData.uid,
                 comments: [],
                 owner: postData.owner
@@ -123,21 +129,30 @@ export function Home() {
                 </div>
                   <div className="pictureFeed">
                   <Link key={post.id} to={`/post/${post.id}`}>
-                      <img
+                  {post.images?.[0]?.url && (
+                    <img
                       src={post.images[0]?.url}
                       alt=""
                       onLoad={() => handleImageLoad(post.id)}
                       style={{ display: loadImages.includes(post.id) ? "block" : "none" }}
-                      />
-                  </Link>
+                    />
+                  )}
+
+                  {post.videos?.[0]?.url && (
+                    <video controls width="100%" height="auto">
+                      <source src={post.videos[0]?.url} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </Link>
                   
                   </div>
                   <div className="addComment">
-                    <Link key={post.id} to={`/post/${post.id}`}>
-                        <button className="btn-comentar">
-                            Comentar
-                        </button>
-                    </Link>
+                <Link key={post.id} to={`/post/${post.id}`}>
+                    <button className="btn-comentar">
+                        Comentar
+                    </button>
+                </Link>
                 </div>
               </section>
               

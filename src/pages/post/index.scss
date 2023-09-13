@@ -112,4 +112,17 @@
     font-size: 14px;
     margin-left: 5px;
     margin-top: 5px;
+
+    span {
+        color: #fff;
+    }
+}
+.videoplayer {
+    width: 100%;
+
+    .playerVideo {
+        width: 100%;
+        height: 500px;
+    }
+
 }

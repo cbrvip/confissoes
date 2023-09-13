@@ -9,14 +9,21 @@ import { Link, useParams } from "react-router-dom";
 import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast from "react-hot-toast";
 
-interface PostProps{
+interface PostProps {
     id: string;
     name: string;
     title: string;
     description: string;
     images: ImagePostProps[];
+    videos: VideoPostProps[]; // Add this field for videos
     uid: string;
-}
+  }
+  
+  interface VideoPostProps {
+    name: string;
+    uid: string;
+    url: string;
+  }
 
 interface ImagePostProps{
     name: string;
@@ -30,10 +37,8 @@ interface PhotoProfile {
     url: string;
 }
 interface UserInfo {
-    // Defina a estrutura dos dados do usuário aqui
     name: string;
     email: string;
-    // Outros campos, se houver
   }
 
 
@@ -123,27 +128,26 @@ export function Profile() {
             }
             
 
-            const postsRef = collection(db, "posts")
-            const queryRef = query(postsRef, where("uid", "==", user.uid))
+            const postsRef = collection(db, "posts");
+            const queryRef = query(postsRef, where("uid", "==", user.uid));
 
-            getDocs(queryRef)
-            .then((snapshot) => {
-                let listposts = [] as PostProps[];
+            getDocs(queryRef).then((snapshot) => {
+            let listposts = [] as PostProps[];
 
-                snapshot.forEach( doc => {
-                    listposts.push({
-                        id: doc.id,
-                        name: doc.data().name,
-                        title: doc.data().title,
-                        description: doc.data().description,
-                        images: doc.data().images,
-                        uid: doc.data().uid
-                    })
-                })
+            snapshot.forEach((doc) => {
+                listposts.push({
+                id: doc.id,
+                name: doc.data().name,
+                title: doc.data().title,
+                description: doc.data().description,
+                images: doc.data().images,
+                videos: doc.data().videos, // Fetch videos as well
+                uid: doc.data().uid,
+                });
+            });
 
-                setPosts(listposts);
-
-            })
+            setPosts(listposts);
+            });
         }
 
         loadPosts();
@@ -206,24 +210,28 @@ export function Profile() {
                     <h2>Publicações</h2>
 
                     <div className="posts">
-                    {posts.map( post => (
-                        <section key={post.id} className="recentPost">
-                            
-                            <Link key={post.id} to={`/post/${post.id}`}>
-                                <img
-                                src={post.images[0]?.url}
-                                alt=""
-                                className="imgProfile"
-                                />
-                            </Link>
-                            <button
-                            className="btn-delete"
-                            onClick={ () =>  handleDeletePost(post) }
-                            >
-                                <FiTrash2 size={26} color="#fff" />
-                            </button>
-                        </section>
-                        ))}
+                    {posts.map((post) => (
+                    <section key={post.id} className="recentPost">
+                        <Link key={post.id} to={`/post/${post.id}`}>
+                        {post.images.length > 0 ? (
+                            <img src={post.images[0]?.url} alt="" className="imgProfile" />
+                        ) : post.videos.length > 0 ? (
+                            <video controls>
+                            <source src={post.videos[0]?.url} type="video/mp4" />
+                            Seu navegador não tem suporte para este player de video!
+                            </video>
+                        ) : (
+                            <p>Erro ao carregar o video</p>
+                        )}
+                        </Link>
+                        <button
+                        className="btn-delete"
+                        onClick={() => handleDeletePost(post)}
+                        >
+                        <FiTrash2 size={0} color="#fff" />
+                        </button>
+                    </section>
+                    ))}
                     </div>
                 
                 </div>
