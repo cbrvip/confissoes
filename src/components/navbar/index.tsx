@@ -1,5 +1,4 @@
 import './index.scss';
-import logoImg from '../../assets/logo.svg';
 import { FaHouseChimney, FaUser, FaPhotoFilm, FaUserPlus, FaCircleLeft } from 'react-icons/fa6';
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
