@@ -194,6 +194,7 @@ export function Profile() {
             {userInfo ? (
               <div>
                 <div className="userPhoto">
+                {signed && user && user.username === username && (
                   <input
                     type="file"
                     id="profileImageInput"
@@ -201,6 +202,7 @@ export function Profile() {
                     style={{ display: 'none' }}
                     accept="image/jpeg, image/png"
                   />
+                  )}
                   <label htmlFor="profileImageInput">
                     <img
                       src={userInfo.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
