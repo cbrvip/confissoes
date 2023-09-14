@@ -11,6 +11,8 @@ const NavMobile: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signed, loadingAuth } = useContext(AuthContext);
 
+    const isAdmin = user && user.admin === 1;
+
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -60,6 +62,11 @@ const NavMobile: React.FC = () => {
               </Link>
             </li>
           )}
+          {isAdmin && (
+                    <Link to={`/admin`}>
+                        <li><span><FaUser size={14} /></span> Administrador</li>
+                    </Link>
+                    )}
           {!loadingAuth && signed && (
             <li>
               <Link to="/profile/post" onClick={closeMenu}>
