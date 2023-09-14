@@ -232,7 +232,9 @@ export function Profile() {
                   
                   <div className="postImg">
                   {post.images.length > 0 ? (
-                      <img src={post.images[0]?.url} alt="" className="imgPost" />
+                      <Link key={post.id} to={`/post/${post.id}`}>
+                        <img src={post.images[0]?.url} alt="" className="imgPost" />
+                      </Link>
                     ) : post.videos.length > 0 ? (
                         <div className="videoplayer">
                         <video

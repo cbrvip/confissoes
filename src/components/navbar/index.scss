@@ -11,15 +11,15 @@
             width: 100%;
             list-style: none;
             display: flex;
+            padding: 0;
 
             li {
-                color: $text-white;
-                line-height: 30px;
+                color: #222;
+                line-height: 28px;
                 font-size: 17px;
                 text-decoration: none;
                 font-weight: 400;
                 padding: 13px;
-                border: 1px solid #6000d5;
 
                     span {
                         margin-right: 12px;
@@ -27,9 +27,8 @@
                     }
 
                 &:hover {
-                  border: 1px solid #fff;
+                  color: #6000d5;
                   border-radius: 10px;
-                  color: #fff;
                 }
             }
         }

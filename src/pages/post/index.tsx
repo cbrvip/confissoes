@@ -49,6 +49,7 @@ interface PostProps {
   images: ImagePostProps[];
   videos: VideoPostProps[];
   comments: CommentProps[];
+  username: string;
 }
 
 export function PostDetail() {
@@ -90,7 +91,8 @@ export function PostDetail() {
         created: postData.created,
         images: postData.images,
         comments: [],
-        videos: postData.videos
+        videos: postData.videos,
+        username: postData.username
       });
   
       const userRef = doc(db, "users", postData.uid);
@@ -222,7 +224,8 @@ export function PostDetail() {
         created: postData.created,
         images: postData.images,
         comments: [],
-        videos: postData.videos
+        videos: postData.videos,
+        username: postData.username
       });
   
       const userRef = doc(db, "users", postData.uid);
@@ -248,7 +251,7 @@ export function PostDetail() {
             {postOwnerPhoto && (
               <img width={50} height={50} src={postOwnerPhoto} alt={postOwner || ""} className="postOwnerPhoto" />
             )}
-            {postOwner && <h1>{postOwner}</h1>}
+            {postOwner && <Link to={`/profile/${post.username}`}><h1>{post.owner}</h1></Link>}
           </div>
           <div className="postDetail">
           <p>{post.description}</p>
