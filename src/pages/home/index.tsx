@@ -114,6 +114,7 @@ export function Home() {
               {posts.map( post => (
               <section className="postFeed" key={post.id}>
                 <div className="infoPost">
+                  <Link to={`/profile/${post.username}`}>
                     {users[post.uid] ? (
                         <img
                         src={users[post.uid].photo}
@@ -125,6 +126,7 @@ export function Home() {
                         ) : (
                             <div>Carregando...</div>
                         )}
+                  </Link>
                    <Link to={`/profile/${post.username}`}><h1>{post.owner}</h1></Link>
                     <h2>{post.description}</h2>
                 </div>
@@ -140,10 +142,17 @@ export function Home() {
                   )}
 
                   {post.videos?.[0]?.url && (
-                    <video controls width="100%" height="auto">
-                      <source src={post.videos[0]?.url} type="video/mp4" />
-                      Your browser does not support the video tag.
+                    <div className="videoplayer">
+                    <video
+                        id="my-player"
+                        className="playerVideo"
+                        preload="auto"
+                        controls
+                        controlsList="nodownload"
+                    >
+                        <source src={post?.videos[0].url} type="video/mp4" />
                     </video>
+                    </div>
                   )}
                 </Link>
                   
