@@ -248,9 +248,11 @@ export function PostDetail() {
       {post && (
         <main className="mainPost">
           <div className="postDetail">
+          <Link to={`/profile/${post.username}`}>
             {postOwnerPhoto && (
               <img width={50} height={50} src={postOwnerPhoto} alt={postOwner || ""} className="postOwnerPhoto" />
             )}
+          </Link>
             {postOwner && <Link to={`/profile/${post.username}`}><h1>{post.owner}</h1></Link>}
           </div>
           <div className="postDetail">
