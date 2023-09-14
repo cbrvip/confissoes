@@ -262,7 +262,7 @@ export function PostDetail() {
               >
                 {post?.images.map((image) => (
                   <SwiperSlide key={image.name}>
-                    <img src={image.url} className="imgPost" alt={image.name} />
+                    <img src={image.url} className="imgPosts" alt={image.name} />
                   </SwiperSlide>
                 ))}
               </Swiper>

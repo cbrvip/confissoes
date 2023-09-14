@@ -11,9 +11,9 @@
         width: 100%;
         height: auto;
 
-        .imgPost {
+        .imgPosts {
             width: 100%;
-            height: 500px;
+            height: auto;
             object-fit: cover;
             border-radius: 10px;
             margin-bottom: 15px;
@@ -50,7 +50,7 @@
 
     .postComments {
         width: 100%;
-        border-top: 1px solid #111;
+        border-top: 1px solid #ddd;
         margin-bottom: 30px;
 
         .inputComment {
@@ -112,7 +112,7 @@
     .mainPost {
         margin-top: 75px;
     }
-    .imgPost {
+    .imgPosts {
         z-index: -999;
         width: 100%;
         height: auto;
