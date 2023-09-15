@@ -250,7 +250,7 @@ export function Profile() {
                         </video>
                         </div>
                     ) : (
-                      <p>Erro ao carregar o vídeo</p>
+                      <p></p>
                     )}
                   </div>
                   {signed && user && user.uid === post.uid && (

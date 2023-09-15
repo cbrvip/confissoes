@@ -16,6 +16,7 @@ import { db } from "../../services/firebaseConnection";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import "./index.scss";
+import { FaArrowLeft } from "react-icons/fa6"
 
 interface CommentProps {
   id: string;
@@ -245,8 +246,14 @@ export function PostDetail() {
 
   return (
     <Container>
+      
       {post && (
         <main className="mainPost">
+          <div className="return">
+            <Link to={`/`}>
+              <h1><span><FaArrowLeft size={25} /></span> Voltar</h1>
+            </Link>
+          </div>
           <div className="postDetail">
           <Link to={`/profile/${post.username}`}>
             {postOwnerPhoto && (

@@ -61,7 +61,10 @@ export function Login() {
 
     const username = await getUsernameFromDatabase(user.uid);
 
-    toast.success("Logado com sucesso!");
+    toast.success('Logado com sucesso!', {
+      position: 'bottom-right',
+});
+    
 
     if (username) {
       navigate(`/profile/${username}`, { replace: true });
@@ -69,7 +72,9 @@ export function Login() {
 
     }
   } catch (err) {
-    toast.error("Erro ao fazer o login");
+    toast.error("Erro ao fazer o login", {
+      position: 'bottom-right',
+  });
   }
 }
 

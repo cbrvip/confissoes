@@ -14,6 +14,7 @@ import { PostsAdminPending } from "./admin/pages/posts/pending";
 import { PostsAdminApproved } from "./admin/pages/posts/approved";
 import { NewPostAdm } from "./admin/pages/posts/new";
 import { CommentAdm } from "./admin/pages/comments";
+import { Lost } from "./pages/lost";
 
 const router = createBrowserRouter([
     {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />
+    },
+    {
+        path: "/lost",
+        element: <Lost />
     },
     {
         path: "/admin",

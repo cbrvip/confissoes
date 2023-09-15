@@ -17,6 +17,7 @@ import {
 } from "firebase/storage";
 import { addDoc, collection} from "firebase/firestore";
 import './index.scss';
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
     description: z.string().nonempty("O campo descrição é obrigatório"),
@@ -36,6 +37,7 @@ interface ImageItemProps {
 export function Post() {
 
     const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: "onChange"
@@ -115,10 +117,6 @@ export function Post() {
     }
 
     async function onSubmit(data: FormData) {
-        if (postImages.length === 0) {
-            toast.error("Envie pelo menos uma imagem ou vídeo do post!");
-            return;
-        }
     
         const images = [];
         const videos = [];
@@ -154,7 +152,11 @@ export function Post() {
             await addDoc(collection(db, "posts"), postData);
             reset();
             setPostImages([]);
-            toast.success("Post cadastrado com sucesso!");
+            toast.success("Post cadastrado com sucesso!", {
+                position: 'bottom-right',
+            });
+
+            navigate(-1);
         } catch (error) {
             console.error(error);
         }
@@ -168,6 +170,11 @@ export function Post() {
         try {
             await deleteObject(imageRef);
             setPostImages(postImages.filter((post) => post.url !== item.url));
+            toast.success("Postagem deleteada", {
+                position: 'bottom-right',
+            });
+            window.location.reload();
+
         } catch(err) {
             	console.log("ERRO AO DELETAR");
         }
@@ -176,7 +183,7 @@ export function Post() {
     return (
         <Container>
             <div className="newPost">
-                <h1>Novo Post</h1>
+                <h1>Fazer uma nova postagem</h1>
 
                 <div className="formPost">
                 <div className="w-full p-3 rounded-lg flex flex-col sm:flex-row items-center gap-2">
@@ -207,13 +214,13 @@ export function Post() {
                 onSubmit={handleSubmit(onSubmit)}
                 >
                     <div className="inputForm">
-                        <p>Descrição do Post</p>
+                        <p>Descrição / Confissão</p>
                         <Input 
                         type="description"
                         register={register}
                         name="description"
                         error={errors.description?.message}
-                        placeholder="Digite uma descrição para a postagem..."
+                        placeholder="Digite uma descrição para a foto ou video ou apenas se confesse..."
                         />
                     </div>
                     <button

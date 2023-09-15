@@ -7,12 +7,32 @@
     margin-top: 95px;
     border-radius: 15px;
 
+    .return {
+        width: 100%;
+        margin-bottom: 10px;
+
+        h1 {
+            font-size: 19px;
+            color: #444;
+            font-weight: 500;
+            padding: 0 10px;
+
+            span {
+                margin-bottom: -5px;
+                display: inline-block;
+            }
+        }
+
+        
+        
+    }
+
     .postImg {
         width: 100%;
         height: auto;
 
         .imgPosts {
-            width: 60%;
+            width: 70%;
             max-height: 600px;
             object-fit: cover;
             border-radius: 10px;
@@ -29,14 +49,14 @@
             color: #000;
             font-size: 21px;
             font-weight: 600;
-            margin-top: 19px;
+            margin-top: 20px;
         }
         p {
             color: #9a9a9a;
             margin-bottom: 7px;
             float: left;
             font-size: 19px;
-            margin-left: 55px;
+            margin-left: 60px;
         }
         .postOwnerPhoto {
             width: 50px;
