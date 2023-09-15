@@ -120,6 +120,9 @@ export function Login() {
             >
               Acessar
             </button>
+            <Link to="/lost">
+            <h1 className="mt-3 text-sm">Esqueceu a sua senha ?</h1>
+          </Link>
           </form>
           <Link to="/">
             Voltar para página inicial
