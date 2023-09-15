@@ -8,6 +8,7 @@ import { AuthContext } from "../../../contexts/AuthContext";
 import { v4 as uuidV4 } from "uuid";
 import toast from "react-hot-toast";
 import { storage, db } from "../../../services/firebaseConnection";
+import { Input } from "../../../components/input";
 import {
   ref,
   uploadBytes,
@@ -36,17 +37,12 @@ export function Post() {
 
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: "onChange"
     });
 
     const [postImages, setPostImages] = useState<ImageItemProps[]>([]);
-    const [description, setDescription] = useState<string>("");
-
-    function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
-        setDescription(event.target.value);
-      }
 
     async function handleFile(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
@@ -213,21 +209,21 @@ export function Post() {
                 ))}
             </div>
             <form
-                className="w-full"
-                onSubmit={handleSubmit(onSubmit)}
-                >
-                    <div className="inputForm">
-            <p>Descrição / Confissão</p>
-            <textarea
-              value={description}
-              onChange={handleDescriptionChange}
-              name="description"
-              placeholder="Digite uma descrição para a foto ou vídeo ou apenas se confesse..."
-              className="h-32 w-full p-2 rounded-lg border border-gray-300"
-            />
-            {errors.description?.message && (
-              <p className="text-red-500">{errors.description?.message}</p>
-            )}
+            className="w-full"
+            onSubmit={handleSubmit(onSubmit)}
+            >
+            <div className="inputForm">
+                <p>Descrição / Confissão</p>
+                <Input 
+                        type="description"
+                        register={register}
+                        name="description"
+                        error={errors.description?.message}
+                        placeholder="Digite uma descrição para a postagem..."
+                        />
+                {errors.description?.message && (
+                <p className="text-red-500">{errors.description?.message}</p>
+                )}
           </div>
           <button
             type="submit"

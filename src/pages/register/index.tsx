@@ -36,11 +36,12 @@ export function Register() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-
+  
       await updateProfile(user, {
         displayName: data.name,
+        photoURL: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here
       });
-
+  
       const userDocRef = doc(db, 'users', user.uid);
       
       await setDoc(userDocRef, {
@@ -48,21 +49,21 @@ export function Register() {
         name: data.name,
         email: data.email,
         username: data.username,
-        photo: "",
+        photo: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here as well
         admin: 0
       });
-
+  
       handleInfoUser({
         uid: user.uid,
         name: data.name,
         email: data.email,
         username: data.username,
-        photo: "",
+        photo: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here as well
         admin: 0
       });
-
+  
       toast.success('Usuário cadastrado com sucesso!');
-      navigate(`/profile/${user.uid}`, { replace: true });
+      navigate(`/profile/${data.username}`, { replace: true });
     } catch (error) {
       toast.error('Erro ao cadastrar usuário!');
       console.log(error);

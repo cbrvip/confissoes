@@ -224,12 +224,14 @@ export function Profile() {
                 <div className="mainPost">
                   <div className="postDetail">
                   <img
-                      src={userInfo.photo || profileImageUrl || "https://publicdomainvectors.org/photos/abstract-user-flat-4.png"}
+                      src={userInfo.photo}
                       className="user-photo"
                       style={{ cursor: 'pointer' }}
                     />
                     <h2><Link to={`/profile/${username}`}>{username || "Username"}</Link></h2>
+                    <Link key={post.id} to={`/post/${post.id}`}>
                     <h3>{post.description}</h3>
+                    </Link>
                   </div>
                   
                   <div className="postImg">
