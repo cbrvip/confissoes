@@ -307,13 +307,12 @@ export function PostDetail() {
               </div>
             ))}
             </div>
-            <input
-              className="inputComment"
-              type="text"
-              placeholder="Adicione um comentário..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
+            <textarea
+            className="inputComment"
+            placeholder="Adicione um comentário..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
             {showError && (
               <div className="error-message">Você precisa estar logado para adicionar um comentário. <span><Link to={`/login`}>Logar</Link> / <Link to={`/register`}>Cadastrar</Link></span></div>
             )}

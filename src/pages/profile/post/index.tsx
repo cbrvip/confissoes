@@ -1,7 +1,6 @@
 import { Container } from "../../../components/container";
 import { FiUpload, FiTrash } from "react-icons/fi";
 import { useForm } from "react-hook-form";
-import { Input } from "../../../components/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChangeEvent, useState, useContext } from "react";
@@ -10,40 +9,44 @@ import { v4 as uuidV4 } from "uuid";
 import toast from "react-hot-toast";
 import { storage, db } from "../../../services/firebaseConnection";
 import {
-    ref,
-    uploadBytes,
-    getDownloadURL,
-    deleteObject
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
 } from "firebase/storage";
-import { addDoc, collection} from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import './index.scss';
 import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
-    description: z.string().nonempty("O campo descrição é obrigatório"),
+  description: z.string().nonempty("O campo descrição é obrigatório"),
 })
 
 type FormData = z.infer<typeof schema>;
 
-
 interface ImageItemProps {
-    uid: string;
-    name: string;
-    previewUrl: string;
-    url: string;
-    type: "image" | "video"; // Add a "type" property to distinguish between images and videos
+  uid: string;
+  name: string;
+  previewUrl: string;
+  url: string;
+  type: "image" | "video"; // Add a "type" property to distinguish between images and videos
 }
 
 export function Post() {
 
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+    const { handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: "onChange"
     });
 
     const [postImages, setPostImages] = useState<ImageItemProps[]>([]);
+    const [description, setDescription] = useState<string>("");
+
+    function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
+        setDescription(event.target.value);
+      }
 
     async function handleFile(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files[0]) {
@@ -214,23 +217,25 @@ export function Post() {
                 onSubmit={handleSubmit(onSubmit)}
                 >
                     <div className="inputForm">
-                        <p>Descrição / Confissão</p>
-                        <Input 
-                        type="description"
-                        register={register}
-                        name="description"
-                        error={errors.description?.message}
-                        placeholder="Digite uma descrição para a foto ou video ou apenas se confesse..."
-                        />
-                    </div>
-                    <button
-                    type="submit"
-                    className="w-full h-10 rounded-md mt-5 bg-zinc-900 text-white font-medium"
-                    >
-                    Cadastrar
-                    </button>
-
-            </form>
+            <p>Descrição / Confissão</p>
+            <textarea
+              value={description}
+              onChange={handleDescriptionChange}
+              name="description"
+              placeholder="Digite uma descrição para a foto ou vídeo ou apenas se confesse..."
+              className="h-32 w-full p-2 rounded-lg border border-gray-300"
+            />
+            {errors.description?.message && (
+              <p className="text-red-500">{errors.description?.message}</p>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="w-full h-10 rounded-md mt-5 bg-zinc-900 text-white font-medium"
+          >
+            Cadastrar
+          </button>
+        </form>
 
                 </div>
             </div>
