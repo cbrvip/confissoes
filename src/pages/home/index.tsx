@@ -128,7 +128,9 @@ export function Home() {
                         )}
                   </Link>
                    <Link to={`/profile/${post.username}`}><h1>{post.owner}</h1></Link>
-                    <h2>{post.description}</h2>
+                </div>
+                <div className="infoPost">
+                <h2>{post.description}</h2>
                 </div>
                   <div className="pictureFeed">
                   <Link key={post.id} to={`/post/${post.id}`}>

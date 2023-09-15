@@ -9,6 +9,7 @@
     margin-top: 95px;
     background: #fff;
     border-radius: 15px;
+    padding: 25px 0;
     
     h2 {
         color: $text-primary;;
@@ -19,7 +20,7 @@
         height: auto;
         display: flex;
         flex-direction: column;
-        padding: 30px 50px;
+        padding: 20px 50px;
 
         .addComment {
             width: 100%;
@@ -51,7 +52,7 @@
 
 
         .pictureFeed {
-            width: 100%;
+            width: 50%;
             max-height: 500px;
             border-radius: 5px;
             overflow: hidden;
@@ -72,13 +73,13 @@
                 font-size: 19px;
                 color: $text-primary;
                 font-weight: 500;
-                padding: 12px 0 5px 0;
+                padding: 15px 0 5px 0;
             }
             h2 {
                 font-size: 16px;
                 color: $text-secondary;
                 font-weight: 400;
-                padding: 0 0 15px 0;
+                padding: 0 0 15px 70px;
             }
 
         }
