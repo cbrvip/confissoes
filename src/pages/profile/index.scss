@@ -13,13 +13,27 @@
     margin-bottom: 30px;
     padding-bottom: 30px;
 
-
     .mainPost {
         width: 100%;
         height: auto;
         flex-direction: column;
         display: flex;
         margin: 0;
+
+        .addComment {
+            width: 100%;
+            height: auto;
+
+            .btn-comentar {
+                width: 100%;
+                padding: 10px;
+                color: #000;
+                border-radius: 20px;
+                margin-top: 10px;
+                border: 2px solid #111;
+                margin-bottom: 15px;
+            }
+        }
 
         h2 {
             font-size: 21px;

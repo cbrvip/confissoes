@@ -64,7 +64,6 @@ export function Profile() {
                 setUserInfo(userData);
               } else {
                 console.log("Usuário não encontrado");
-                // Lide com o caso em que o usuário não é encontrado
               }
             }
           } catch (error) {
@@ -135,7 +134,6 @@ export function Profile() {
                 const queryRef = query(postsRef, where("uid", "==", userUid));
                 
                 getDocs(queryRef).then((snapshot) => {
-                  // Atualize os posts com os dados do usuário cujo perfil está sendo visualizado
                   let listposts = [] as PostProps[];
       
                   snapshot.forEach((doc) => {
@@ -163,7 +161,6 @@ export function Profile() {
       }, [username]);
 
       async function handleDeletePost(post: PostProps) {
-        // Verifique se o usuário logado é o proprietário do post antes de permitir a exclusão
         if (user && user.uid === post.uid) {
             const itemPost = post;
             const docRef = doc(db, "posts", itemPost.id);
@@ -181,9 +178,9 @@ export function Profile() {
                 }
             });
         } else {
-            // Exiba uma mensagem de erro ou feedback para o usuário
+
             console.error("Você não tem permissão para excluir este post.");
-            // Exibir uma mensagem de erro para o usuário (por exemplo, usando um toast)
+
             toast.error("Você não tem permissão para excluir este post.");
         }
     }
@@ -255,6 +252,13 @@ export function Profile() {
                       <p></p>
                     )}
                   </div>
+                  <div className="addComment">
+                <Link key={post.id} to={`/post/${post.id}`}>
+                    <button className="btn-comentar">
+                        Comentar
+                    </button>
+                </Link>
+                </div>
                   {signed && user && user.uid === post.uid && (
                       <button
                         className="btn-delete"

@@ -65,11 +65,26 @@ export function PostDetail() {
   const [postOwner, setPostOwner] = useState<string | null>(null);
   const [postOwnerPhoto, setPostOwnerPhoto] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const scrollPositionRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Salvar a posição de rolagem quando o componente for desmontado
+      if (window && window.scrollY) {
+        scrollPositionRef.current = window.scrollY;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     async function loadPost() {
       if (!id) {
         return;
+      }
+
+      if (scrollPositionRef.current !== null) {
+        window.scrollTo(0, scrollPositionRef.current);
+        scrollPositionRef.current = null; // Limpar a posição após restaurar
       }
     
       const postRef = doc(db, "posts", id);
@@ -244,15 +259,18 @@ export function PostDetail() {
     loadPost();
   }, [id, navigate]);
 
+  const handleNavigateToDetail = () => {
+    scrollPositionRef.current = window.scrollY;
+    navigate(`/post/${id}`);
+  };
+
   return (
     <Container>
       
       {post && (
         <main className="mainPost">
           <div className="return">
-            <Link to={`/`}>
-              <h1><span><FaArrowLeft size={25} /></span> Voltar</h1>
-            </Link>
+              <button onClick={handleNavigateToDetail}><h1><span><FaArrowLeft size={25} /></span> Voltar</h1></button>
           </div>
           <div className="postDetail">
           <Link to={`/profile/${post.username}`}>
