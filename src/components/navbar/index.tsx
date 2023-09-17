@@ -39,6 +39,11 @@ export function Navbar() {
                     </Link>
                     )}
                     {!loadingAuth && signed && (
+                    <Link to={"/"}>
+                        <li><span><FaUser size={14} /></span> Suporte</li>
+                    </Link>
+                    )}
+                    {!loadingAuth && signed && (
                     <Link to={"/"} onClick={handleLogout}>
                         <li><span><FaCircleLeft size={14} /></span> Logout</li>
                     </Link>

@@ -109,8 +109,14 @@ export function Home() {
   return (
       <>
       <Container>
-          
       <div className="feed">
+        <div className="sendConfission">
+          <Link to={`/profile/post`}>
+          <button className="btn-confission">
+            Envie sua Confissão
+          </button>
+          </Link>
+        </div>
               {posts.map( post => (
               <section className="postFeed" key={post.id}>
                 <div className="infoPost">
