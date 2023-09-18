@@ -261,7 +261,7 @@ export function PostDetail() {
 
   const handleNavigateToDetail = () => {
     scrollPositionRef.current = window.scrollY;
-    navigate(`/post/${id}`);
+    navigate(-1);
   };
 
   return (
