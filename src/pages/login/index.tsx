@@ -120,6 +120,9 @@ export function Login() {
             >
               Acessar
             </button>
+            <Link to="/register">
+            <h1 className="mt-3 text-sm">Não tem uma conta ? Cadastre-se</h1>
+          </Link>
             <Link to="/lost">
             <h1 className="mt-3 text-sm">Esqueceu a sua senha ?</h1>
           </Link>
