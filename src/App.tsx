@@ -15,6 +15,7 @@ import { PostsAdminApproved } from "./admin/pages/posts/approved";
 import { NewPostAdm } from "./admin/pages/posts/new";
 import { CommentAdm } from "./admin/pages/comments";
 import { Lost } from "./pages/lost";
+import { PostsAdminRejected } from "./admin/pages/posts/rejected";
 
 const router = createBrowserRouter([
     {
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/posts/pending",
         element: <Private><PostsAdminPending /></Private>
+    },
+    {
+        path: "/admin/posts/rejected",
+        element: <Private><PostsAdminRejected /></Private>
     },
     {
         path: "/admin/posts/new",

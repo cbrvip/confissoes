@@ -109,6 +109,27 @@ interface PostProps {
     }
 }
 
+async function rejectPost(postId: string) {
+  const postRef = doc(db, "posts", postId);
+
+  try {
+      await updateDoc(postRef, {
+          approved: 2,
+      });
+
+      setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+              post.id === postId ? { ...post, approved: 2 } : post
+          )
+      );
+
+      console.log("Post reject successfully!");
+      window.location.reload();
+  } catch (error) {
+      console.error("Error approving post:", error);
+  }
+}
+
 async function loadUser(uid: string) {
     const userDocRef = doc(db, "users", uid);
     const userDocSnapshot = await getDoc(userDocRef);
@@ -204,7 +225,7 @@ useEffect(() => {
                                 )}
                               {post.approved === 1 && (
                                     <button
-                                    onClick={() => disapprovePost(post.id)}
+                                    onClick={() => rejectPost(post.id)}
                                     className="disapproveButton"
                                 >
                                     Rejeitar Postagem

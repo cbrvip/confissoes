@@ -47,7 +47,7 @@ interface VideoPostProps {
   }
 
 
-export function PostsAdminPending() {
+export function PostsAdminRejected() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
   const [users, setUsers] = useState<Record<string, any>>({});
@@ -65,7 +65,7 @@ export function PostsAdminPending() {
 
       for (const doc of querySnapshot.docs) {
           const postData = doc.data();
-          if (postData.approved === 0) {
+          if (postData.approved === 2) {
             postsData.push({
                 id: doc.id,
                 title: postData.title,
@@ -215,7 +215,7 @@ useEffect(() => {
                 </Link>
                   </div>
                   <div className="adminControls">
-                                {post.approved === 0 && (
+                                {post.approved === 2 && (
                                     <button
                                         onClick={() => approvePost(post.id)}
                                         className="approveButton"
@@ -224,12 +224,12 @@ useEffect(() => {
                                     </button>
                                     
                                 )}
-                                {post.approved === 0 && (
+                                {post.approved === 2 && (
                                     <button
                                         onClick={() => rejectPost(post.id)}
                                         className="approveButton"
                                     >
-                                        Rejeitar Postagem
+                                        Excluir Postagem
                                     </button>
                                     
                                 )}
