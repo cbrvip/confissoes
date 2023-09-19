@@ -6,7 +6,8 @@ import {
     getDocs,
     orderBy,
     updateDoc,
-    doc
+    doc,
+    getDoc
 } from "firebase/firestore";
 import { db } from "../../../../services/firebaseConnection";
 import { Link } from "react-router-dom";
@@ -14,32 +15,42 @@ import './index.scss';
 import { Navbar } from "../../../components/navbar";
 
 interface PostProps {
-  id: string;
-  title: string;
-  description: string;
-  uid: string;
-  approved: number;
-  images: PostImageProps[];
-  comments: CommentProps[];
-}
-
-interface CommentProps {
-  id: string;
-  text: string;
-  userId: string;
-  createdAt: Date;
-}
-
-interface PostImageProps{
-    name: string;
+    id: string;
+    title: string;
+    description: string;
     uid: string;
-    url: string;
-}
-
-
-export function PostsAdminApproved() {
-  const [posts, setPosts] = useState<PostProps[]>([]);
-  const [loadImages, setLoadImages] = useState<string[]>([]);
+    approved: number;
+    images: PostImageProps[];
+    comments: CommentProps[];
+    username: string;
+    owner: string;
+    videos: VideoPostProps[];
+  }
+  
+  interface CommentProps {
+    id: string;
+    text: string;
+    userId: string;
+    createdAt: Date;
+  }
+  
+  interface PostImageProps{
+      name: string;
+      uid: string;
+      url: string;
+  }
+  
+  interface VideoPostProps {
+      uid: string;
+      name: string;
+      url: string;
+    }
+  
+  
+  export function PostsAdminApproved() {
+    const [posts, setPosts] = useState<PostProps[]>([]);
+    const [loadImages, setLoadImages] = useState<string[]>([]);
+    const [users, setUsers] = useState<Record<string, any>>({});
 
   useEffect(() => {
       loadPosts();
@@ -63,6 +74,9 @@ export function PostsAdminApproved() {
                 approved: postData.approved,
                 uid: postData.uid,
                 comments: [],
+                username: postData.username,
+                owner: postData.owner,
+                videos: postData.videos
             });
         }
     }
@@ -95,30 +109,92 @@ export function PostsAdminApproved() {
     }
 }
 
+async function loadUser(uid: string) {
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    if (userDocSnapshot.exists()) {
+      const userData = userDocSnapshot.data();
+      console.log("Dados do usuário carregados com sucesso:", userData);
+      setUsers((prevUsers) => ({
+        ...prevUsers,
+        [uid]: userData,
+      }));
+      console.log("Estado users atualizado:", users);
+    } else {
+      console.log("Dados do usuário não encontrados para UID:", uid);
+    }
+  }
+
+useEffect(() => {
+    posts.forEach((post) => {
+      if (!users[post.uid]) {
+        loadUser(post.uid);
+      }
+    });
+  }, [posts, users]);
+
   return (
-      <>
-      <Container>
-        <main>
-          <Navbar />
-          <div className="feed">
-              {posts.map( post => (
-              <section className="postFeed" key={post.id}>
-                  <div
-                      className="w-full rounded-lg bg-slate-200"
-                      style={{ display: loadImages.includes(post.id) ? "none": "block"}}
-                  ></div>
-                  <div className="pictureFeed">
-                  <Link key={post.id} to={`/post/${post.id}`}>
+    <>
+    <Container>
+    <Navbar />
+    </Container>
+    <div className="boxingg">
+    <Container>
+      <main>
+        
+        <div className="feedAdmin">
+            {posts.map( post => (
+            <section className="postFeedAdmin" key={post.id}>
+              <div className="infoPost">
+                <Link to={`/profile/${post.username}`}>
+                  {users[post.uid] ? (
                       <img
-                      src={post.images[0]?.url}
-                      alt=""
-                      onLoad={() => handleImageLoad(post.id)}
-                      style={{ display: loadImages.includes(post.id) ? "block" : "none" }}
+                      src={users[post.uid].photo}
+                      alt={`Foto de ${users[post.uid].name}`}
+                      width={45}
+                      height={45}
+                      className="userPhoto"
                       />
-                  </Link>
+                      ) : (
+                          <div>Carregando...</div>
+                      )}
+                      <h1>{post.owner}</h1>
+                </Link>
+              </div>
+                <div
+                    className="w-full rounded-lg bg-slate-200"
+                    style={{ display: loadImages.includes(post.id) ? "none": "block"}}
+                ></div>
+                <div className="pictureFeed">
+                <Link key={post.id} to={`/post/${post.id}`}>
+                {post.images?.[0]?.url && (
+                  <img
+                    src={post.images[0]?.url}
+                    alt=""
+                    className="imgPostAdminFeed"
+                    onLoad={() => handleImageLoad(post.id)}
+                    style={{ display: loadImages.includes(post.id) ? "block" : "none" }}
+                  />
+                )}
+
+                {post.videos?.[0]?.url && (
+                  <div className="videoplayer">
+                  <video
+                      id="my-player"
+                      className="playerVideo"
+                      preload="auto"
+                      controls
+                      controlsList="nodownload"
+                  >
+                      <source src={post?.videos[0].url} type="video/mp4" />
+                  </video>
                   </div>
-                  <div className="adminControls">
-                                {post.approved === 1 && (
+                )}
+                <h1>{post.description}</h1>
+              </Link>
+                </div>
+                <div className="adminControls">
+                {post.approved === 1 && (
                                     <button
                                     onClick={() => disapprovePost(post.id)}
                                     className="disapproveButton"
@@ -126,16 +202,25 @@ export function PostsAdminApproved() {
                                     Remover do Feed
                                 </button>
                                 )}
-                            </div>
-              </section>
+                              {post.approved === 1 && (
+                                    <button
+                                    onClick={() => disapprovePost(post.id)}
+                                    className="disapproveButton"
+                                >
+                                    Rejeitar Postagem
+                                </button>
+                                )}
+                          </div>
+            </section>
 
-              
-              
-              ))}
-              
-          </div>
-          </main>
-      </Container>
-      </>
-  )
+            
+            
+            ))}
+            
+        </div>
+        </main>
+    </Container>
+    </div>
+    </>
+)
 }
