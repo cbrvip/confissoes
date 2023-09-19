@@ -6,7 +6,8 @@ import {
     getDocs,
     orderBy,
     updateDoc,
-    doc
+    doc,
+    getDoc
 } from "firebase/firestore";
 import { db } from "../../../../services/firebaseConnection";
 import { Link } from "react-router-dom";
@@ -21,6 +22,9 @@ interface PostProps {
   approved: number;
   images: PostImageProps[];
   comments: CommentProps[];
+  username: string;
+  owner: string;
+  videos: VideoPostProps[];
 }
 
 interface CommentProps {
@@ -36,10 +40,17 @@ interface PostImageProps{
     url: string;
 }
 
+interface VideoPostProps {
+    uid: string;
+    name: string;
+    url: string;
+  }
+
 
 export function PostsAdminPending() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
+  const [users, setUsers] = useState<Record<string, any>>({});
 
   useEffect(() => {
       loadPosts();
@@ -63,6 +74,9 @@ export function PostsAdminPending() {
                 approved: postData.approved,
                 uid: postData.uid,
                 comments: [],
+                username: postData.username,
+                owner: postData.owner,
+                videos: postData.videos
             });
         }
     }
@@ -95,27 +109,89 @@ export function PostsAdminPending() {
     }
 }
 
+async function loadUser(uid: string) {
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    if (userDocSnapshot.exists()) {
+      const userData = userDocSnapshot.data();
+      console.log("Dados do usuário carregados com sucesso:", userData);
+      setUsers((prevUsers) => ({
+        ...prevUsers,
+        [uid]: userData,
+      }));
+      console.log("Estado users atualizado:", users);
+    } else {
+      console.log("Dados do usuário não encontrados para UID:", uid);
+    }
+  }
+
+useEffect(() => {
+    posts.forEach((post) => {
+      if (!users[post.uid]) {
+        loadUser(post.uid);
+      }
+    });
+  }, [posts, users]);
+
   return (
       <>
       <Container>
+      <Navbar />
+      </Container>
+      <div className="boxingg">
+      <Container>
         <main>
-          <Navbar />
-          <div className="feed">
+          
+          <div className="feedAdmin">
               {posts.map( post => (
-              <section className="postFeed" key={post.id}>
+              <section className="postFeedAdmin" key={post.id}>
+                <div className="infoPost">
+                  <Link to={`/profile/${post.username}`}>
+                    {users[post.uid] ? (
+                        <img
+                        src={users[post.uid].photo}
+                        alt={`Foto de ${users[post.uid].name}`}
+                        width={45}
+                        height={45}
+                        className="userPhoto"
+                        />
+                        ) : (
+                            <div>Carregando...</div>
+                        )}
+                        <h1>{post.owner}</h1>
+                  </Link>
+                </div>
                   <div
                       className="w-full rounded-lg bg-slate-200"
                       style={{ display: loadImages.includes(post.id) ? "none": "block"}}
                   ></div>
                   <div className="pictureFeed">
                   <Link key={post.id} to={`/post/${post.id}`}>
-                      <img
+                  {post.images?.[0]?.url && (
+                    <img
                       src={post.images[0]?.url}
                       alt=""
+                      className="imgPostAdminFeed"
                       onLoad={() => handleImageLoad(post.id)}
                       style={{ display: loadImages.includes(post.id) ? "block" : "none" }}
-                      />
-                  </Link>
+                    />
+                  )}
+
+                  {post.videos?.[0]?.url && (
+                    <div className="videoplayer">
+                    <video
+                        id="my-player"
+                        className="playerVideo"
+                        preload="auto"
+                        controls
+                        controlsList="nodownload"
+                    >
+                        <source src={post?.videos[0].url} type="video/mp4" />
+                    </video>
+                    </div>
+                  )}
+                  <h1>{post.description}</h1>
+                </Link>
                   </div>
                   <div className="adminControls">
                                 {post.approved === 0 && (
@@ -125,6 +201,16 @@ export function PostsAdminPending() {
                                     >
                                         Aprovar para o Feed
                                     </button>
+                                    
+                                )}
+                                {post.approved === 0 && (
+                                    <button
+                                        onClick={() => approvePost(post.id)}
+                                        className="approveButton"
+                                    >
+                                        Rejeitar Postagem
+                                    </button>
+                                    
                                 )}
                             </div>
               </section>
@@ -136,6 +222,7 @@ export function PostsAdminPending() {
           </div>
           </main>
       </Container>
+      </div>
       </>
   )
 }

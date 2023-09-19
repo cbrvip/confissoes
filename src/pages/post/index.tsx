@@ -284,33 +284,35 @@ export function PostDetail() {
           <p>{post.description}</p>
           </div>
           <div className="postImg">
-            {post?.images.length > 0 ? (
-              <Swiper
-                slidesPerView={sliderPerView}
-                pagination={{ clickable: true }}
-                navigation
-              >
-                {post?.images.map((image) => (
-                  <SwiperSlide key={image.name}>
-                    <img src={image.url} className="imgPosts" alt={image.name} />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            ) : (
-              <div className="videoplayer">
-              <video
-                id="my-player"
-                ref={videoRef}
-                className="playerVideo"
-                preload="auto"
-                controls
-                controlsList="nodownload"
-              >
-                <source src={post?.videos[0].url} type="video/mp4" />
-              </video>
-              </div>
-            )}
-          </div>
+  {post?.images.length > 0 ? (
+    <Swiper
+      slidesPerView={sliderPerView}
+      pagination={{ clickable: true }}
+      navigation
+    >
+      {post?.images.map((image) => (
+        <SwiperSlide key={image.name}>
+          <img src={image.url} className="imgPosts" alt={image.name} />
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  ) : post?.videos.length > 0 ? (
+    <div className="videoplayer">
+      <video
+        id="my-player"
+        ref={videoRef}
+        className="playerVideo"
+        preload="auto"
+        controls
+        controlsList="nodownload"
+      >
+        <source src={post?.videos[0].url} type="video/mp4" />
+      </video>
+    </div>
+  ) : (
+    <p></p>
+  )}
+</div>
           <article className="postComments">
             <div className="comments">
             {commentList.map((comment) => (

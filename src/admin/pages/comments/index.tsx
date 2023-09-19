@@ -21,6 +21,7 @@ interface PostProps {
   description: string;
   uid: string;
   comments: CommentProps[];
+  owner: string;
 }
 
 interface CommentProps {
@@ -55,6 +56,7 @@ export function CommentAdm() {
               description: postData.description,
               uid: postData.uid,
               comments: comments,
+              owner: postData.owner
           });
       }
   }
@@ -115,7 +117,7 @@ async function handleDeleteComment(postId: string, commentId: string) {
             <div className="listComments">
               {posts.map( post => (
               <section className="infoPost" key={post.id}>
-                  <Link key={post.id} to={`/post/${post.id}`}><h1>Título da Postagem: {post.title}</h1></Link>
+                  <Link key={post.id} to={`/post/${post.id}`}><h1>Postagem de: {post.owner}</h1></Link>
                   <p>Descrição: {post.description}</p>
                   <div className="comments">
                     <h2>Comentários:</h2>
