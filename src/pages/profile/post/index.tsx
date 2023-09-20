@@ -8,7 +8,6 @@ import { AuthContext } from "../../../contexts/AuthContext";
 import { v4 as uuidV4 } from "uuid";
 import toast from "react-hot-toast";
 import { storage, db } from "../../../services/firebaseConnection";
-import { Input } from "../../../components/input";
 import {
   ref,
   uploadBytes,
@@ -214,13 +213,13 @@ export function Post() {
             >
             <div className="inputForm">
                 <p>Descrição / Confissão</p>
-                <Input 
-                        type="description"
-                        register={register}
-                        name="description"
-                        error={errors.description?.message}
-                        placeholder="Digite uma descrição para a postagem..."
-                        />
+                <textarea
+                {...register("description")}
+                name="description"
+                placeholder="Digite uma descrição para a postagem..."
+                defaultValue={""}
+                className="w-full border-2 rounded-md h-11 px-2 inputField"
+                />
                 {errors.description?.message && (
                 <p className="text-red-500">{errors.description?.message}</p>
                 )}

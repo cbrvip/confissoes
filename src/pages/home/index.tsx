@@ -7,7 +7,7 @@ import {
     doc,
     getDoc,
     getDocs,
-    orderBy
+    orderBy,
 } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
@@ -166,6 +166,7 @@ export function Home() {
                   
                   </div>
                   <div className="addComment">
+                  
                 <Link key={post.id} to={`/post/${post.id}`}>
                     <button className="btn-comentar">
                         Comentar

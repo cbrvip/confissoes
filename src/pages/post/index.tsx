@@ -66,65 +66,6 @@ export function PostDetail() {
   const [postOwnerPhoto, setPostOwnerPhoto] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scrollPositionRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      // Salvar a posição de rolagem quando o componente for desmontado
-      if (window && window.scrollY) {
-        scrollPositionRef.current = window.scrollY;
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    async function loadPost() {
-      if (!id) {
-        return;
-      }
-
-      if (scrollPositionRef.current !== null) {
-        window.scrollTo(0, scrollPositionRef.current);
-        scrollPositionRef.current = null; // Limpar a posição após restaurar
-      }
-    
-      const postRef = doc(db, "posts", id);
-      const postSnapshot = await getDoc(postRef);
-    
-      if (!postSnapshot.exists()) {
-        navigate("/");
-        return;
-      }
-    
-      const postData = postSnapshot.data();
-    
-      setPost({
-        id: postSnapshot.id,
-        title: postData.title,
-        description: postData.description,
-        name: postData.name,
-        uid: postData.uid,
-        owner: postData.owner,
-        created: postData.created,
-        images: postData.images,
-        comments: [],
-        videos: postData.videos,
-        username: postData.username
-      });
-  
-      const userRef = doc(db, "users", postData.uid);
-      const userSnapshot = await getDoc(userRef);
-    
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-        setPostOwner(userData.username);
-        setPostOwnerPhoto(userData.photo || null);
-      }
-    
-      loadComments();
-    }
-  
-    loadPost();
-  }, [id, navigate]);
   
   async function getCommentsForPost(postId: string) {
     const commentsRef = collection(db, "comments");
