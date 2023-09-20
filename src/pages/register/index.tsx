@@ -26,6 +26,7 @@ type FormData = z.infer<typeof schema>;
 export function Register() {
   const { handleInfoUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -34,6 +35,9 @@ export function Register() {
 
   async function onSubmit(data: FormData) {
     try {
+      // Transform the username
+      const formattedUsername = data.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+  
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
   
@@ -43,12 +47,12 @@ export function Register() {
       });
   
       const userDocRef = doc(db, 'users', user.uid);
-      
+  
       await setDoc(userDocRef, {
         uid: user.uid,
         name: data.name,
         email: data.email,
-        username: data.username,
+        username: formattedUsername, // Use the formatted username
         photo: 'https://www.cornosvip.com/photo.png', // Set the default photo URL here as well
         admin: 0
       });
@@ -57,13 +61,13 @@ export function Register() {
         uid: user.uid,
         name: data.name,
         email: data.email,
-        username: data.username,
+        username: formattedUsername, // Use the formatted username
         photo: 'https://www.cornosvip.com/photo.png', // Set the default photo URL here as well
         admin: 0
       });
   
       toast.success('Usuário cadastrado com sucesso!');
-      navigate(`/profile/${data.username}`, { replace: true });
+      navigate(`/profile/${formattedUsername}`, { replace: true });
     } catch (error) {
       toast.error('Erro ao cadastrar usuário!');
       console.log(error);
