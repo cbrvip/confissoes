@@ -39,7 +39,7 @@ export function Register() {
   
       await updateProfile(user, {
         displayName: data.name,
-        photoURL: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here
+        photoURL: 'https://www.cornosvip.com/photo.png', // Set the default photo URL here
       });
   
       const userDocRef = doc(db, 'users', user.uid);
@@ -49,7 +49,7 @@ export function Register() {
         name: data.name,
         email: data.email,
         username: data.username,
-        photo: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here as well
+        photo: 'https://www.cornosvip.com/photo.png', // Set the default photo URL here as well
         admin: 0
       });
   
@@ -58,7 +58,7 @@ export function Register() {
         name: data.name,
         email: data.email,
         username: data.username,
-        photo: 'https://cdn-icons-png.flaticon.com/512/149/149071.png', // Set the default photo URL here as well
+        photo: 'https://www.cornosvip.com/photo.png', // Set the default photo URL here as well
         admin: 0
       });
   

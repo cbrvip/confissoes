@@ -207,8 +207,9 @@ export function Profile() {
                     type="file"
                     id="profileImageInput"
                     onChange={handleProfileImageUpload}
-                    style={{ display: 'none' }}
+                    className="profileAlt"
                     accept="image/jpeg, image/png"
+                    style={{ display: 'none' }}
                   />
                   )}
                   <label htmlFor="profileImageInput">
