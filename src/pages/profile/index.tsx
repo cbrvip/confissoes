@@ -1,13 +1,14 @@
 import { Container } from "../../components/container";
-import { useEffect, useState, useContext, ChangeEvent } from "react";
+import { useEffect, useState, useContext, ChangeEvent, useRef } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { collection, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../services/firebaseConnection";
 import { AuthContext } from "../../contexts/AuthContext";
 import './index.scss';
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ref, deleteObject, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast from "react-hot-toast";
+import { FaArrowLeft } from "react-icons/fa6"
 
 interface PostProps {
     id: string;
@@ -50,6 +51,8 @@ export function Profile() {
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
     const { username } = useParams(); // Obtenha o 'username' da URL
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+    const scrollPositionRef = useRef<number | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchUserInfo() {
@@ -185,9 +188,17 @@ export function Profile() {
         }
     }
 
+    const handleNavigateToDetail = () => {
+      scrollPositionRef.current = window.scrollY;
+      navigate(-1);
+    };
+
     return (
         <Container>
           <div className="mainProfile">
+          <div className="return">
+              <button onClick={handleNavigateToDetail}><h1><span><FaArrowLeft size={25} /></span> Voltar</h1></button>
+          </div>
             {userInfo ? (
               <div>
                 <div className="userPhoto">
