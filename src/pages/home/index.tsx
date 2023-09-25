@@ -56,7 +56,6 @@ export function Home() {
   const [loadImages, setLoadImages] = useState<string[]>([]);
   const [users, setUsers] = useState<Record<string, any>>({});
   const [commentList, setCommentList] = useState<Record<string, CommentProps[]>>({});
-  const [input, setInput] = useState("");
   const [showError, setShowError] = useState(false);
   const { user } = useContext(AuthContext);
   const [commentVisibility, setCommentVisibility] = useState<Record<string, boolean>>({});
@@ -170,7 +169,6 @@ export function Home() {
     const postId = post.id;
   
     addComment(postId, userId, username, commentText);
-    setInput(""); // Limpe o texto do comentário após adicionar
   }
 
 async function loadCommentsForPost(postId: string) {
