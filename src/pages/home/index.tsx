@@ -1,6 +1,6 @@
 import { Container } from "../../components/container";
 import './index.scss'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     collection,
     query,
@@ -8,37 +8,46 @@ import {
     getDoc,
     getDocs,
     orderBy,
+    addDoc,
+    where
 } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
-interface PostProps {
+interface CommentProps {
   id: string;
-  title: string;
-  description: string;
-  uid: string;
-  images: PostImageProps[];
-  comments: CommentProps[];
-  videos: VideoPostProps[];
-  owner: string;
+  text: string;
+  userId: string;
   username: string;
+  createdAt: Date;
+  photo: string;
 }
+
+interface ImagePostProps {
+  uid: string;
+  name: string;
+  url: string;
+}
+
 interface VideoPostProps {
   uid: string;
   name: string;
   url: string;
 }
-interface CommentProps {
-  id: string;
-  text: string;
-  userId: string;
-  createdAt: Date;
-}
 
-interface PostImageProps{
-    name: string;
-    uid: string;
-    url: string;
+interface PostProps {
+  id: string;
+  title: string;
+  description: string;
+  name: string;
+  uid: string;
+  owner: string;
+  created: string;
+  images: ImagePostProps[];
+  videos: VideoPostProps[];
+  comments: CommentProps[];
+  username: string;
 }
 
 
@@ -46,6 +55,11 @@ export function Home() {
   const [posts, setPosts] = useState<PostProps[]>([]);
   const [loadImages, setLoadImages] = useState<string[]>([]);
   const [users, setUsers] = useState<Record<string, any>>({});
+  const [commentList, setCommentList] = useState<Record<string, CommentProps[]>>({});
+  const [showError, setShowError] = useState(false);
+  const { user } = useContext(AuthContext);
+  const [commentVisibility, setCommentVisibility] = useState<Record<string, boolean>>({});
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
 
   useEffect(() => {
       loadPosts();
@@ -62,15 +76,17 @@ export function Home() {
           const postData = doc.data();
           if (postData.approved === 1) {
             postsData.push({
-                id: doc.id,
-                title: postData.title,
-                description: postData.description,
-                images: postData.images,
-                videos: postData.videos,
-                uid: postData.uid,
-                comments: [],
-                owner: postData.owner,
-                username: postData.username
+              id: doc.id,
+              title: postData.title,
+              description: postData.description,
+              name: postData.name,
+              uid: postData.uid,
+              owner: postData.owner,
+              created: postData.created,
+              images: postData.images,
+              comments: [],
+              videos: postData.videos,
+              username: postData.username
             });
         }
     }
@@ -83,12 +99,10 @@ export function Home() {
     const userDocSnapshot = await getDoc(userDocRef);
     if (userDocSnapshot.exists()) {
       const userData = userDocSnapshot.data();
-      console.log("Dados do usuário carregados com sucesso:", userData);
       setUsers((prevUsers) => ({
         ...prevUsers,
         [uid]: userData,
       }));
-      console.log("Estado users atualizado:", users);
     } else {
       console.log("Dados do usuário não encontrados para UID:", uid);
     }
@@ -105,6 +119,97 @@ export function Home() {
   function handleImageLoad(id: string) {
       setLoadImages((prevImageLoaded) => [...prevImageLoaded, id])
   }
+
+  async function addComment(
+    postId: string,
+    userId: string,
+    username: string,
+    text: string
+  ) {
+    try {
+      // Recupere o URL da foto do usuário que fez o comentário
+      const userDocRef = doc(db, "users", userId);
+      const userDocSnapshot = await getDoc(userDocRef);
+  
+      let userPhoto = "";
+  
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        userPhoto = userData.photo;
+      }
+  
+      const newComment = {
+        postId,
+        userId,
+        username,
+        text,
+        createdAt: new Date(),
+        photo: userPhoto,
+      };
+  
+      await addDoc(collection(db, "comments"), newComment);
+  
+      // Após adicionar o comentário com sucesso, atualize os comentários do post
+      loadCommentsForPost(postId);
+    } catch (error) {
+      console.error("Erro ao adicionar o comentário:", error);
+    }
+  }
+
+  function handleAddComment(post: PostProps, commentText: string) {
+    if (!user || !user.uid || !user.username || !post) {
+      setShowError(true);
+      return;
+    }
+  
+    if (commentText.trim() === "") return;
+  
+    const userId = user.uid;
+    const username = user.username;
+    const postId = post.id;
+  
+    addComment(postId, userId, username, commentText);
+  }
+
+async function loadCommentsForPost(postId: string) {
+  try {
+    const commentsRef = collection(db, 'comments');
+    const queryRef = query(
+      commentsRef,
+      where('postId', '==', postId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const querySnapshot = await getDocs(queryRef);
+    const comments: CommentProps[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const commentData = doc.data();
+      comments.push({
+        id: doc.id,
+        text: commentData.text,
+        userId: commentData.userId,
+        username: commentData.username,
+        createdAt: commentData.createdAt.toDate(),
+        photo: commentData.photo,
+      });
+    });
+
+    // Atualize os comentários do post com os comentários carregados
+    setCommentList((prevCommentList) => ({
+      ...prevCommentList,
+      [postId]: comments,
+    }));
+
+    // Defina a visibilidade dos comentários como verdadeira
+    setCommentVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [postId]: true,
+    }));
+  } catch (error) {
+    console.error('Erro ao carregar comentários:', error);
+  }
+}
 
   return (
       <>
@@ -165,14 +270,78 @@ export function Home() {
                 </Link>
                   
                   </div>
-                  <div className="addComment">
-                  
-                <Link key={post.id} to={`/post/${post.id}`}>
-                    <button className="btn-comentar">
-                        Comentar
-                    </button>
-                </Link>
-                </div>
+                  <article className="postComments">
+  <div className="comments">
+    {commentList[post.id]?.map((comment) => (
+      <div key={comment.id} className="comment">
+       <div className="user-info">
+  {users[comment.userId] ? (
+    <Link to={`/profile/${comment.username}`}>
+      <img
+        width={30}
+        height={30}
+        src={users[comment.userId].photo} // Acesse a foto do usuário usando o ID do usuário
+        alt={comment.username}
+        className="user-photo"
+      />
+      <span>{comment.username}</span>
+    </Link>
+  ) : (
+    <div><img
+    width={30}
+    height={30}
+    src="" // Acesse a foto do usuário usando o ID do usuário
+    alt=""
+    className="user-photo"
+  /></div>
+  )}
+</div>
+        <p>{comment.text}</p>
+      </div>
+    ))}
+  </div>
+  
+  {commentVisibility[post.id] && ( // Mostrar apenas quando os comentários estão visíveis
+    <div className="comment-input">
+      <textarea
+        className="inputComment"
+        placeholder="Adicione um comentário..."
+        value={commentInputs[post.id] || ''}
+        onChange={(e) => {
+          setCommentInputs((prevInputs) => ({
+            ...prevInputs,
+            [post.id]: e.target.value,
+          }));
+        }}
+      />
+      {showError && (
+        <div className="error-message">Você precisa estar logado para adicionar um comentário. <span><Link to={`/login`}>Logar</Link> / <Link to={`/register`}>Cadastrar</Link></span></div>
+      )}
+      <button className="btn-comment" onClick={() => handleAddComment(post, commentInputs[post.id])}>
+        Enviar Comentário
+      </button>
+    </div>
+  )}
+</article>
+<div className="addComment">
+  <button
+    className="btn-comentar"
+    onClick={() => {
+      if (commentVisibility[post.id]) {
+        // Se os comentários estiverem visíveis, oculte-os
+        setCommentVisibility((prevVisibility) => ({
+          ...prevVisibility,
+          [post.id]: false,
+        }));
+      } else {
+        // Se os comentários estiverem ocultos, carregue-os
+        loadCommentsForPost(post.id);
+      }
+    }}
+  >
+    {commentVisibility[post.id] ? 'Fechar comentários' : 'Ver comentários'}
+  </button>
+</div>
               </section>
               
               ))}

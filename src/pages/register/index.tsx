@@ -27,7 +27,6 @@ export function Register() {
   const { handleInfoUser } = useContext(AuthContext);
   const navigate = useNavigate();
   
-
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange"
