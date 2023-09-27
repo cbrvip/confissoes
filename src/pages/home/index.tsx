@@ -99,10 +99,10 @@ export function Home() {
     const userDocSnapshot = await getDoc(userDocRef);
     if (userDocSnapshot.exists()) {
       const userData = userDocSnapshot.data();
-      setUsers((prevUsers) => ({
-        ...prevUsers,
-        [uid]: userData,
-      }));
+setUsers((prevUsers) => ({
+  ...prevUsers,
+  [uid]: userData,
+}));
     } else {
       console.log("Dados do usuário não encontrados para UID:", uid);
     }
@@ -185,13 +185,15 @@ async function loadCommentsForPost(postId: string) {
 
     querySnapshot.forEach((doc) => {
       const commentData = doc.data();
+      console.log('Comment data:', commentData);
+      const userPhoto = commentData.photo || 'https://www.cornosvip.com/photo.png';
       comments.push({
         id: doc.id,
         text: commentData.text,
         userId: commentData.userId,
         username: commentData.username,
         createdAt: commentData.createdAt.toDate(),
-        photo: commentData.photo,
+        photo: userPhoto,
       });
     });
 
@@ -272,33 +274,28 @@ async function loadCommentsForPost(postId: string) {
                   </div>
                   <article className="postComments">
   <div className="comments">
-    {commentList[post.id]?.map((comment) => (
-      <div key={comment.id} className="comment">
-       <div className="user-info">
-  {users[comment.userId] ? (
-    <Link to={`/profile/${comment.username}`}>
-      <img
-        width={30}
-        height={30}
-        src={users[comment.userId].photo} // Acesse a foto do usuário usando o ID do usuário
-        alt={comment.username}
-        className="user-photo"
-      />
+  {commentList[post.id]?.map((comment) => (
+  <div key={comment.id} className="comment">
+    <div className="user-info">
+      <Link to={`/profile/${comment.username}`}>
       <span>{comment.username}</span>
-    </Link>
-  ) : (
-    <div><img
-    width={30}
-    height={30}
-    src="" // Acesse a foto do usuário usando o ID do usuário
-    alt=""
-    className="user-photo"
-  /></div>
-  )}
-</div>
-        <p>{comment.text}</p>
-      </div>
-    ))}
+        {comment.photo ? (
+          <img
+            width={30}
+            height={30}
+            src={comment.photo}
+            alt={comment.username}
+            className="user-photo"
+          />
+          
+        ) : (
+          <div>URL_DA_IMAGEM_PADRÃO</div>
+        )}
+      </Link>
+    </div>
+    <p>{comment.text}</p>
+  </div>
+))}
   </div>
   
   {commentVisibility[post.id] && ( // Mostrar apenas quando os comentários estão visíveis
