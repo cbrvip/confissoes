@@ -18,8 +18,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     position="top-right"
     reverseOrder={false}
     />
-    <AuthProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
       </AuthProvider>
   </React.StrictMode>,
 )

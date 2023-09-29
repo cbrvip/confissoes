@@ -9,7 +9,9 @@ import {
     getDocs,
     orderBy,
     addDoc,
-    where
+    where,
+    limit,
+    startAfter
 } from "firebase/firestore";
 import { db } from "../../services/firebaseConnection";
 import { Link } from "react-router-dom";
@@ -60,39 +62,88 @@ export function Home() {
   const { user } = useContext(AuthContext);
   const [commentVisibility, setCommentVisibility] = useState<Record<string, boolean>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [lastPost, setLastPost] = useState<null | any>(null); // Rastreie o último post carregado
 
   useEffect(() => {
       loadPosts();
   }, []);
 
   async function loadPosts() {
-      const postsRef = collection(db, "posts");
-      const queryRef = query(postsRef, orderBy("created", "desc"));
+    const postsRef = collection(db, "posts");
+    const queryRef = query(postsRef, orderBy("created", "desc"), limit(10)); // Defina o limite inicial
 
-      const querySnapshot = await getDocs(queryRef);
-      const postsData: PostProps[] = [];
+    const querySnapshot = await getDocs(queryRef);
+    const postsData: PostProps[] = [];
 
-      for (const doc of querySnapshot.docs) {
-          const postData = doc.data();
-          if (postData.approved === 1) {
-            postsData.push({
-              id: doc.id,
-              title: postData.title,
-              description: postData.description,
-              name: postData.name,
-              uid: postData.uid,
-              owner: postData.owner,
-              created: postData.created,
-              images: postData.images,
-              comments: [],
-              videos: postData.videos,
-              username: postData.username
-            });
-        }
+    for (const doc of querySnapshot.docs) {
+        const postData = doc.data();
+        if (postData.approved === 1) {
+          postsData.push({
+            id: doc.id,
+            title: postData.title,
+            description: postData.description,
+            name: postData.name,
+            uid: postData.uid,
+            owner: postData.owner,
+            created: postData.created,
+            images: postData.images,
+            comments: [],
+            videos: postData.videos,
+            username: postData.username
+          });
+      }
     }
 
-      setPosts(postsData);
+    setPosts(postsData);
+    // Atualize o último post carregado
+    if (querySnapshot.docs.length > 0) {
+      setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+    }
+}
+
+// Função para carregar mais posts
+async function loadMorePosts() {
+  if (!lastPost) {
+    return; // Não há mais posts para carregar
   }
+  const postsRef = collection(db, "posts");
+  const queryRef = query(
+    postsRef,
+    orderBy("created", "desc"),
+    limit(10),
+    startAfter(lastPost) // Use o último post carregado como ponto de partida
+  );
+
+  const querySnapshot = await getDocs(queryRef);
+  const postsData: PostProps[] = [];
+
+  for (const doc of querySnapshot.docs) {
+    const postData = doc.data();
+    if (postData.approved === 1) {
+      postsData.push({
+        id: doc.id,
+        title: postData.title,
+        description: postData.description,
+        name: postData.name,
+        uid: postData.uid,
+        owner: postData.owner,
+        created: postData.created,
+        images: postData.images,
+        comments: [],
+        videos: postData.videos,
+        username: postData.username
+      });
+    }
+  }
+
+  // Adicione os novos posts aos posts existentes
+  setPosts((prevPosts) => [...prevPosts, ...postsData]);
+  
+  // Atualize o último post carregado
+  if (querySnapshot.docs.length > 0) {
+    setLastPost(querySnapshot.docs[querySnapshot.docs.length - 1]);
+  }
+}
 
   async function loadUser(uid: string) {
     const userDocRef = doc(db, "users", uid);
@@ -339,10 +390,16 @@ async function loadCommentsForPost(postId: string) {
     {commentVisibility[post.id] ? 'Fechar comentários' : 'Ver comentários'}
   </button>
 </div>
+
               </section>
               
+              
               ))}
+              <div className="center">
+              <button className="btn-showMore" onClick={loadMorePosts}>Carregar mais ...</button>
+              </div>
           </div>
+          
       </Container>
       </>
   )
