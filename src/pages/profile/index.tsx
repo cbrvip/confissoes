@@ -1,5 +1,5 @@
 import { Container } from "../../components/container";
-import { useEffect, useState, useContext, ChangeEvent, useRef } from "react";
+import { useEffect, useState, useContext, ChangeEvent } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { collection, getDocs, where, query, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../services/firebaseConnection";
@@ -51,12 +51,24 @@ export function Profile() {
     const [photoProfile, setPhotoProfile] = useState<PhotoProfile[]>([]);
     const { username } = useParams(); // Obtenha o 'username' da URL
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-    const scrollPositionRef = useRef<number | null>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
+      const scrollPosition = window.scrollY;
+  
+      const handleBeforeUnload = () => {
+        sessionStorage.setItem("scrollPosition", scrollPosition.toString());
+      };
+  
+      window.addEventListener("beforeunload", handleBeforeUnload);
+  
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }, []);
+
+    useEffect(() => {
         async function fetchUserInfo() {
-            console.log("Username da URL:", username);
           try {
             if (username && typeof username === 'string' && username.trim() !== '') {
               const userQuery = query(collection(db, "users"), where("username", "==", username));
@@ -189,7 +201,6 @@ export function Profile() {
     }
 
     const handleNavigateToDetail = () => {
-      scrollPositionRef.current = window.scrollY;
       navigate(-1);
     };
 
