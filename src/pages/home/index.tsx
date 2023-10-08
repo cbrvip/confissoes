@@ -62,15 +62,15 @@ export function Home() {
   const { user } = useContext(AuthContext);
   const [commentVisibility, setCommentVisibility] = useState<Record<string, boolean>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
-  const [lastPost, setLastPost] = useState<null | any>(null); // Rastreie o último post carregado
+  const [lastPost, setLastPost] = useState<null | any>(null);
 
   useEffect(() => {
-      loadPosts();
+    loadPosts();
   }, []);
 
   async function loadPosts() {
     const postsRef = collection(db, "posts");
-    const queryRef = query(postsRef, orderBy("created", "desc"), limit(10)); // Defina o limite inicial
+    const queryRef = query(postsRef, orderBy("created", "desc"), limit(10));
 
     const querySnapshot = await getDocs(queryRef);
     const postsData: PostProps[] = [];
@@ -278,7 +278,7 @@ async function loadCommentsForPost(postId: string) {
               {posts.map( post => (
               <section className="postFeed" key={post.id}>
                 <div className="infoPost">
-                  <Link to={`/profile/${post.username}`}>
+                <Link to={`/profile/${post.username}`}>
                     {users[post.uid] ? (
                         <img
                         src={users[post.uid].photo}
